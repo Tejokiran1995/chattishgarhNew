@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimaryDark">#00BCD4</color>
+    <color name="colorAccent">#03DAC5</color>
+
+
+
+    <color name="ok">#176A1F</color>
+    <color name="cancel">#FF0000</color>
+    <color name="button">#009688</color>
+    <color name="black">#000000</color>
+    <color name="rd">#444</color>
+    <color name="background">#d9e8ed</color>
+    <color name="white">#FFFFFF</color>
+
+
+    <color name="member_details_color">#F6C987</color>
+    <drawable name="label_color">#FF6BB324</drawable>
+
+
+
+    <drawable name="tweet_user_color">#FF52991F</drawable>
+    <drawable name="tweet_color">#FF000000</drawable>
+    <drawable name="tweet_meta_color">#FF999999</drawable>
+    <color name="greydark">#7d7d7d </color>
+    <color name="opaque_red">#f00</color>
+    <color name="translucent_red">#80ff0000</color>
+    <color name="link_color">#FF0066CC</color>
+
+    <color name="status_background">#FFA</color>
+    <color name="status_text">#000</color>
+    <color name="grey05">#00868B</color>
+    <color name="simiple_button_color">#FFF</color>
+
+    <color name="body_background">#FFF</color>
+
+    <color name="clear">#00000000</color>
+
+    <color name="action_bar">#fff</color>
+    <color name="action_bar_pressed">#ffd0d0d0</color>
+
+    <color name="self_background">#FFFAF4BE</color>
+    <color name="mention_background">#FFC9E6F8</color>
+
+    <color name="yellow">#FFFF00</color>
+    <color name="green">#66FF00</color>
+
+
+    //Iris
+    <color name="ik_transparent">#80000000</color>
+    <color name="ik_full_transparent">#00000000</color>
+    <color name="ik_blue_white">#FFBDE5F2</color>
+    <color name="ik_purple">#FF662E91</color>
+    <color name="ik_orange">#FFEA8010</color>
+    <color name="ik_blue_gray">#FF696277</color>
+    <color name="ik_dark_black">#FF141100</color>
+    <color name="ik_dark_gray">#FB3C3F41</color>
+</resources>

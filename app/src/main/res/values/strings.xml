@@ -1,0 +1,452 @@
+<resources>
+    <string name="app_name">CHHATTISGARH PDS</string>
+
+
+    <dimen name="TextsizeT">35dp</dimen>
+
+    <!--Layout-->
+    <dimen name="LayoutW">20dp</dimen>
+    <dimen name="LayoutH">20dp</dimen>
+
+    <dimen name="LayoutMV">10dp</dimen>
+    <dimen name="LayoutMH">20dp</dimen>
+
+    <dimen name="LayoutMT">100dp</dimen>
+    <dimen name="LayoutP">10dp</dimen>
+
+
+
+
+
+    <!--Button-->
+    <dimen name="ButtonW">80dp</dimen>
+    <dimen name="ButtonH">80dp</dimen>
+    <dimen name="ButtonMW">100dp</dimen>
+    <dimen name="ButtonMH">100dp</dimen>
+    <dimen name="ButtonM">15dp</dimen>
+
+    <dimen name="TextsizeB">25sp</dimen>
+
+    <dimen name="TextsizeP">1dp</dimen>
+
+    <dimen name="TextsizeH">20sp</dimen>
+    <dimen name="TextsizeV">20sp</dimen>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <string name="printsuccess">Print Success</string>
+    <string name="printfailed">Print Failed</string>
+
+
+    //start
+    <string name="CHHATISGARHPDS">CHHATTISGARH  PDS</string>
+    <string name="SET">SET</string>
+    <string name="UID_DETAILS">UID DETAILS</string>
+    <string name="Start">Start</string>
+    <string name="RD"> RD</string>
+    <string name="COMMODITY_WEIGHT">COMMODITY WEIGHT</string>
+    <string name="COMMODITY_WEIGHING">COMMODITY WEIGHING</string>
+    <string name="Iris">I</string>
+    <string name="Quit">Quit</string>
+    <string name="Settings">Settings</string>
+
+
+
+
+    //dealers_details
+    <string name="Dealer_Details">Downloading Dealer Details</string>
+    <string name="NAME">NAME</string>
+    <string name="TYPE">TYPE</string>
+    <string name="Consent_Form">Consent Form</string>
+    <string name="Back">Back</string>
+    <string name="Scan_FP">Scan FP</string>
+    <string name="Next">NEXT </string>
+    <string name="Agree">Agree</string>
+    <string name="Disagree">Disagree</string>
+
+    //cash_pds
+    <string name="CASH_PDS">CASH PDS</string>
+    <string name="RC_No">RC No</string>
+    <string name="Aadhaar">Aadhaar</string>
+    <string name="Card_No">Card No.</string>
+    <string name="Get_Details">Get Details</string>
+    <string name="Home">Home</string>
+    <string name="Last_Reciept">Last Reciept</string>
+
+    //home
+    <string name="HOME">HOME</string>
+    <string name="Issue">Issue</string>
+    <string name="Inspection">Inspection</string>
+    <string name="Aadhaar_Services">Aadhaar Services</string>
+    <string name="Receive_Goods">Receive Goods</string>
+    <string name="Reports">Reports</string>
+    <string name="Others">Others</string>
+    <string name="Logout">Logout</string>
+
+    //issue
+    <string name="ISSUE">ISSUE</string>
+    <string name="Cash_PDS">Cash PDS</string>
+    <string name="Cashless_PDS">Cashless PDS</string>
+    <string name="IMPDS">IMPDS</string>
+
+    //MD
+    <string name="MEMEBER_DETAILS">MEMEBER DETAILS</string>
+    <string name="UID">UID</string>
+    <string name="Iris1">Iris</string>
+
+    //commodities
+    <string name="COMMODITIES">COMMODITIES</string>
+    <string name="TotQty">TotQty</string>
+    <string name="BalQty">BalQty</string>
+    <string name="Rate">Rate</string>
+    <string name="issueQty">IssueQty</string>
+    <string name="ClBal">ClBal</string>
+    <string name="Get">Get</string>
+    <string name="Confirm">Confirm</string>
+
+    //print
+    <string name="CommTot">Comm(Tot)</string>
+    <string name="PrevBal">PrevBal</string>
+    <string name="AllocQty">AllocQty</string>
+    <string name="Price">Price</string>
+    <string name="Total">Total</string>
+    <string name="Please_connect_to_the_Bluetooth_printer_to_print">Please connect to the Bluetooth printer to print</string>
+    <string name="Connect">Connect</string>
+    <string name="Print">Print</string>
+
+    //daily_sales_report
+    <string name="DAILY_SALES_REPORT">DAILY SALES REPORT</string>
+    <string name="ddmmyyyy">dd/mm/yyyy</string>
+    <string name="View">View</string>
+    <string name="Comm">Comm</string>
+    <string name="AAY">AAY</string>
+    <string name="SFY">SFY</string>
+    <string name="PHH">PHH</string>
+    <string name="TOTAL">TOTAL</string>
+
+    //stock_report
+    <string name="CURRENT_STOCK">CURRENT STOCK</string>
+    <string name="Scheme">Scheme</string>
+    <string name="Stock">Stock</string>
+    <string name="CB">CB</string>
+
+    //reports
+    <string name="REPORTS">REPORTS</string>
+    <string name="Daily_Sales_Report">Daily Sales Report</string>
+    <string name="Stock_Report">Stock Report</string>
+
+    //settings
+    <string name="SETTINGS">SETTINGS</string>
+    <string name="Device">Device</string>
+    <string name="Update">Update</string>
+    <string name="Device_Info">Device Info</string>
+
+    //device
+    <string name="DEVICE">DEVICE</string>
+    <string name="Device_ID">Device ID :</string>
+    <string name="RD_Service">RD Service :</string>
+    <string name="selected_language">Selected Language</string>
+    <string name="Set_Language">SET  Language</string>
+    <string name="english">ENGLISH</string>
+    <string name="hindi">हिंदी</string>
+
+    //device_info
+    <string name="DEVICE_INFO">DEVICE INFO</string>
+    <string name="UPDATE">UPDATE</string>
+    <string name="USB">USB</string>
+    <string name="GPRS">GPRS</string>
+
+    //beneficary_verification
+    <string name="BENEFICIARY_VERIFY">BENEFICIARY VERIFY</string>
+    <string name="CardNo">Card No.</string>
+    <string name="Aadhaar_No">Aadhaar No. :</string>
+    <string name="Ok">Ok</string>
+    <string name="Member_ID">Member ID</string>
+
+    //icds
+    <string name="Image">Image</string>
+    <string name="ICDS">ICDS</string>
+    <string name="AWCID">AWC ID :</string>
+    <string name="Details">Details</string>
+    <string name="RCNO">RC NO :</string>
+    <string name="B1">B1</string>
+
+    //start
+    <string name="Rd_Service">No RD Service</string>
+    <string name="RD_Service_Msg">Fingerprint RD Service Application is not avaliable in Device</string>
+    <string name="Please_Check_Device_Internet_Connection">Please Check Device Internet Connection</string>
+    <string name="Dealers">Dealers</string>
+    <string name="Fetching_Dealers">Fetching Dealers ...</string>
+    <string name="DealerDetails">Dealer Details: </string>
+    <string name="Application">Application</string>
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
+    <string name= "Start_Ok">OK</string>
+
+    //Dealers Details
+    <string name="Explain_here_why_the_app_needs_permissions">Explain here why the app needs permissions</string>
+    <string name="Bio">Bio</string>
+    <string name="Please_check_Consent_Form">Please check Consent Form</string>
+    <string name="Internet_Connection">No Internet Connection</string>
+    <string name="Internet_Connection_Msg">Please check Device Internet Connection and Try again</string>
+    <string name="Connection_Error">Connection Error</string>
+    <string name="Please_Select_Dealer_Name">Please Select Dealer Name</string>
+    <string name="Please_Select_Another_Dealer">Please Select Another Dealer Name</string>
+    <string name="Dealer">Dealer</string>
+    <string name="Please_wait">Please Wait</string>
+    <string name="Do_you_want_to_Cancel">Do you want to Cancel</string>
+    <string name="IRIS_login">IRIS login</string>
+    <string name="Biometric_login">Biometric  login</string>
+    <string name="Biometric">Biometric</string>
+    <string name="Password_login">Password login</string>
+    <string name="Password">Password</string>
+    <string name="Please_Enter_Dealer_Authentication_Password">Please Enter Dealer Authentication Password</string>
+    <string name="Dealer_Password">Dealer Password</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Authenticating">Authenticating...</string>
+    <string name="Downloading_Menus">Downloading Menus</string>
+    <string name="Dealer_Authentication">Dealer Authentication: </string>
+    <string name="RD_SERVICE_ERROR">RD SERVICE ERROR</string>
+    <string name="PID_Exception">PID Exception</string>
+
+    <string name="NA">UID is Not Present</string>
+    <string name="NA_MSG">Please Select Other Member</string>
+
+
+    <string name="Battery">Unable To Print Recipt due to Low Battery</string>
+    <string name="Battery_Msg"> Please charge the Battery</string>
+
+
+    //Issue
+    <string name="Cashless_PDS_function_is_Not_Available">Cashless PDS function is Not Available</string>
+    <string name="IMPDS_function_is_Not_Available">IMPDS function is Not Available</string>
+    <string name="Members">Downloading Members Details</string>
+    <string name="Fetching_Members">Fetching Members ...</string>
+    <string name="Member_Details">Member Details: </string>
+
+    //Cash pds
+    <string name="Please_Enter_a_Valid_Number_RC">Please Enter RC Number</string>
+    <string name="Please_Enter_a_Valid_Number_UID">Please Enter 12 digit UID Number</string>
+    <string name="Please_Enter_Valid_Number">Please Enter valid UID Number</string>
+    <string name="Invalid_ID">Invalid RC ID</string>
+    <string name="Invalid_UID">Invalid UID</string>
+    <string name="This_function_is_not_Enabled_yet">This function is not Enabled yet</string>
+    <string name="Going_Back">Going Back</string>
+    <string name="Please_Enter_Your_Ration_ID">Please Enter RC Number</string>
+    <string name="Please_Enter_Your_Aadhaar_ID">Please Enter Your Aadhaar ID</string>
+
+    //MD
+    <string name="Do_you_want_to_cancel_Session">Do you want to cancel Session</string>
+    <string name="Iris_for_Authentication">Iris for Authentication</string>
+    <string name="ScanFP_for_Authentication">ScanFP for Authentication</string>
+    <string name="No_Iris_authentication_for_this_member">No Iris authentication for this member</string>
+    <string name="NO_Iris">NO Iris</string>
+    <string name="No_Biometric_authentication_for_this_member">No Biometric authentication for this member</string>
+    <string name="NO_Biometric">NO Biometric</string>
+    <string name="Please_Select_Member_Name">Please Select Member Name</string>
+    <string name="Member">Member</string>
+    <string name="Member_Authentication">Member Authentication: </string>
+    <string name="No_RD_Service_Available">No RD Service Available</string>
+
+    //RD
+    <string name="select_your_Commodities_and_give_weights">select your Commodities and give weights</string>
+    <string name="Please_Enter_the_required_Weight">Please Enter the required Weight</string>
+    <string name="Please_get_Weight_from_Weighing_Machine">Please get Weight from Weighing Machine</string>
+    <string name="There_are_no_required_commodity_weights">There are no required commodity weights</string>
+    <string name="Enable_Bluetooth_and_pair_your_Device_Manually">Enable Bluetooth and pair your Device Manually</string>
+    <string name="Please_Select_USB_or_Bluetooth">Please Select USB or Bluetooth</string>
+    <string name="Please_give_Quantity_between_Min_bal_and_Close_bal">Please Enter required Qty less than or equal</string>
+    <string name="Please_Issue_Commodity_upto_Bal_Qty_only">Please Issue Commodity upto Bal Qty only</string>
+    <string name="Please_Wait">Please Wait...</string>
+    <string name="USB_Ready">USB Ready</string>
+    <string name="USB_Permission_not_granted">USB Permission not granted</string>
+    <string name="No_USB_connected">No USB connected</string>
+    <string name="USB_disconnected">USB disconnected</string>
+    <string name="USB_device_not_supported">USB device not supported</string>
+    <string name="Please_Enter_the_Weight">Please Enter the Weight</string>
+    <string name="Socket_creation_failed">Socket creation failed</string>
+    <string name="Socket_Exception">Socket Exception</string>
+
+    //Print
+    <string name="NOT_Supported">NOT Supported</string>
+    <string name="Disabled">Disabled</string>
+    <string name="Enabled">Enabled</string>
+    <string name="Scanning">Scanning...</string>
+    <string name="Connecting">Connecting...</string>
+    <string name="CONNECTED">CONNECTED</string>
+    <string name="Connection_Failed">Connection Failed</string>
+    <string name="No_Paired_Devices">No Paired Devices</string>
+    <string name="Bluetooth">Bluetooth</string>
+    <string name="PLEASE_PAIR_THE_DEVICE">PLEASE PAIR THE DEVICE</string>
+    <string name="Printer_ERROR">Printer ERROR</string>
+    <string name="Please_check_your_bluetooth_connection">Please check your bluetooth connection</string>
+    <string name="Printer_Error">Printer Error</string>
+    <string name="Device_does_not_support_Bluetooth">Device does not support Bluetooth</string>
+    <string name="Chhattisgarh">Chhattisgarh</string>
+    <string name="Department">Department</string>
+    <string name="RECEIPT">RECEIPT</string>
+    <string name="FPS_Owner_Name">FPS Owner Name</string>
+    <string name="FPS_No">FPS No</string>
+    <string name="Availed_FPS_No">Availed FPS No</string>
+    <string name="Name_of_Consumer">Name of Consumer</string>
+    <string name="TransactionID">TransactionID</string>
+    <string name="Transaction">Transaction Successful</string>
+    <string name="Printing">Printing, Please Wait</string>
+    <string name="Date">Date :</string>
+    <string name="AllotmentMonth">AllotmentMonth</string>
+    <string name="AllotmentYear">AllotmentYear</string>
+    <string name="Commodity_Lifted_Rate_Price">Commodity    Lifted      Rate    Price</string>
+    <string name="commodity">Commodity</string>
+    <string name="lifted">Lifted</string>
+    <string name="rate">Rate</string>
+    <string name="price">Price</string>
+    <string name="Total_Amount">Total Amount</string>
+    <string name="Public_Distribution_Dept">Public Distribution Dept</string>
+    <string name="Note_Qualitys_in_KgsLtrs">(Note : Qualitys in Kgs/Ltrs)</string>
+    <string name="LOGOUT_SUCCESS">LOGOUT SUCCESS</string>
+
+    <string name = "Aadhaar_Seeding">Aadhaar Seeding</string>
+    <string name="Error_Code">Error Code</string>
+    <string name="Member_is_already_Verified">Member is already Verified</string>
+    <string name="Already_Verified">UID Already Seeded</string>
+    <string name="Processing">Processing ...</string>
+    <string name="Fetching_Details">Fetching Details</string>
+    <string name="Beneficiary_Verification">Beneficiary Verification : </string>
+    <string name="Government_of_Chattisgarh">Government of Chattisgarh</string>
+    <string name="Permission_denied">Permission denied</string>
+    <string name="ConnectUSB">ConnectUSB</string>
+    <string name="MemberName">MemberName :</string>
+    <string name="DOB">DOB : </string>
+    <string name="PindCode">PindCode : </string>
+    <string name="Gender">Gender : </string>
+    <string name="Beneficiary_Details">Beneficiary Details</string>
+    <string name="LAST_RECEIPT">LAST RECEIPT</string>
+    <string name="Please_Enter_date_in_Edit_text_to_view_Stock">Please Enter date in Edit text to view Stock</string>
+    <string name="Enter_Date">Enter Date</string>
+    <string name="DAY_REPORT">DAY REPORT</string>
+    <string name="Time">Time</string>
+    <string name="Day_Report_Date">Day Report Date</string>
+    <string name="FPS_ID">FPS ID</string>
+    <string name="VERIFICATION_RECEIPT">VERIFICATION RECEIPT</string>
+    <string name="Ration_Card_Number">Ration Card Number</string>
+    <string name="Commodity_Scheme_Sale">Commodity     Scheme      Sale</string>
+    <string name="scheme">Scheme</string>
+    <string name="sale">Sale</string>
+    <string name="Note_Quantitys_In_KgsLtrsPackets">Note:Quantitys In Kgs/Ltrs/Packets</string>
+    <string name="No_Data_to_Print">No Data to Print</string>
+    <string name="Invalid_Password">Invalid Password</string>
+    <string name="MenuList">Menu List: </string>
+    <string name="Uploading_Stock">Uploading Stock</string>
+    <string name="PROGRAMMATICAL_ERROR_IN_GETTING_FILE_SIZE">PROGRAMMATICAL ERROR IN GETTING FILE SIZE</string>
+    <string name="APK">APK</string>
+    <string name="Download_in_progress">Download in progress</string>
+    <string name="Download_Cancelled">Download Cancelled</string>
+    <string name="Download_Failed">Download Failed</string>
+    <string name="Unable_to_Download">Unable to Download!</string>
+    <string name="Download_Completed">Download Completed</string>
+    <string name="PROGRAMMATICAL_ERROR_IN_DOWNLOAD">PROGRAMMATICAL ERROR IN DOWNLOAD</string>
+    <string name="Something_went_Wrong_Please_Try_Again">Something went Wrong Please Try Again..</string>
+    <string name="No_Storage_Space_to_Download_this_File">No Storage Space to Download this File</string>
+    <string name="Connection_Problem_or_Server_Down">Connection Problem or Server Down</string>
+    <string name="Server_Reply_code_is_Negetive_Please_try_again">Server Reply code is Negetive. Please try again..!</string>
+    <string name="Authentication_Problem">Authentication Problem</string>
+    <string name="UNKNOWN_ERROR">UNKNOWN ERROR</string>
+    <string name="Commodity_details_are_updating">Commodity details are updating ...</string>
+    <string name="Commodities_Error">Commodities Error: </string>
+    <string name="Invalid_Inputs">Invalid Inputs</string>
+    <string name="Transaction_Success_Do_you_want_to_Print_Receipt">Transaction Success. Do you want to Print Receipt </string>
+    <string name="Please_Enter_the_required_quantity">Please Enter the required quantity</string>
+    <string name="Enter_Quantity">Enter Quantity</string>
+    <string name="Please_enter_a_valid_Value">Please enter a valid value</string>
+    <string name="Invalid_Quantity">Invalid Quantity</string>
+    <string name="Department_of_FoodCivil_Supplies">    Department of Food,Civil Supplies and </string>
+    <string name="Consumer_Affairs">Consumer Affairs</string>
+    <string name="Inspection_Receipt">      Inspection Receipt</string>
+    <string name="Inspected_By">Inspected By</string>
+    <string name="Designation">Designation</string>
+    <string name="Status">STATUS</string>
+    <string name="Commidity_CB_Obsevn_Varitn">Commidity  CB    Obsevn   Varitn</string>
+
+    <string name="part1">I hereby state that I have no objection in authenticating myself with
+Aadhaar based authentication system and consent to providing my Aadhaar number
+Biometrics and/or One Time Pin (OTP) data for Aadhaar based authentication
+"for the purposes of availing of the Ration/PDS Service from</string>
+    <string name="part2">.I understand that the Biometrics and/or OTP I provide for authentication shall be
+    used only for authenticating my identity through the Aadhaar Authentication system
+                            for that specific transaction and for no other purposes.Iunderstand that </string>
+    <string name="part3">shall ensure security and confidentiality of my personal identity data provided for the purpose of
+                            Aadhaar based authentication.</string>
+    <string name="Manual">Manual</string>
+    <string name="Authentication_Type_Not_Specified">Authentication Type Not Specified</string>
+    <string name="Authentication_Type">Authentication Type</string>
+    <string name="Member_EKYC">Member EKYC: </string>
+    <string name="Authenticating_EKYC">Authenticating EKYC...</string>
+    <string name="Please_Enter_Member_UID_Number">Please Enter Member UID Number</string>
+    <string name="UID_Number">Please enter 12 digit uid number</string>
+    <string name="Your_GPS_seems_to_be_disabled_do_you_want_to_enable_it">Your GPS seems to be disabled, do you want to enable it?</string>
+    <string name="Please_allow_these_permissions_in_order_to_use_application">Please allow these permissions in order to use application</string>
+    <string name="Permissions">Permissions</string>
+    <string name="current_stock">Current Stock</string>
+    <string name="report">Report</string>
+    <string name="Report_Type">Report Type</string>
+    <string name="Name_Sch_Stockkgs_Issued_CB">Name    Sch   Stock(kgs)   Issued   CB</string>
+    <string name="name">Name</string>
+    <string name="sch">Sch</string>
+    <string name="stock">Stock</string>
+    <string name="issued">Issued</string>
+    <string name="cb">CB</string>
+
+    <string name="Please_Select_a_Member">Please Select a Member</string>
+    <string name="UID_Seeding">UID Seeding : </string>
+    <string name="Not_a_Valid_Weight">Not a Valid Weight</string>
+    <string name="Enter_valid_weight">Enter valid weight</string>
+    <string name="Please_try_again">Please try again</string>
+    <string name="Please_Enter_a_valid_Password">Please Enter a valid Password</string>
+    <string name="Dealer_FIR_Authentication">Dealer FIR Authentication: </string>
+    <string name="Dealer_Fusion_Authentication">Dealer Fusion Authentication: </string>
+    <string name="Dealer_FP_Authentication">Dealer FP Authentication: </string>
+    <string name="Connect_your_device_to_the_usb_Port">Connect your device to the usb Port</string>
+    <string name="USB_Connection">USB Connection</string>
+    <string name="Not_Enabled">Not Enabled</string>
+    <string name="Inspection_Details">Inspection Details: </string>
+    <string name="Enter_UID">Enter UID</string>
+    <string name="Truck_No">Truck No :</string>
+    <string name="Invalid_Aadhaar">Invalid Aadhaar</string>
+
+
+    <string name="AADHAAR_SERVICES">AADHAAR SERVICES</string>
+    <string name="UID_SEEDing">UID SEEDING</string>
+    <string name="BENEficiary_VERIfication">BENEFICIARY VERIFICATION</string>
+    <string name="BENEFICIARY_DETAILS">BENEFICIARY DETAILS</string>
+    <string name="EKYC">EKYC</string>
+    <string name="Enter_Date_to_view_sales">Enter Date to view sales</string>
+    <string name="DEALER_DETAILS">DEALER DETAILS</string>
+    <string name="DEALER_AUTHENTICATION">DEALER AUTHENTICATION</string>
+    <string name="INSPECTION">INSPECTION</string>
+    <string name="COMMODITY">COMMODITY</string>
+    <string name="OBSERVATION">OBSERVATION</string>
+    <string name="VARIATION">VARIATION</string>
+    <string name="Seized">Seized</string>
+    <string name="RECEIVE_GOODS">RECEIVE GOODS</string>
+    <string name="Allot">Allot</string>
+    <string name="dispatch">Dispatch</string>
+    <string name="Receive">Receive</string>
+    <string name="Weighing">Weighing</string>
+    <string name="Devices_LIST">DEVICE LIST</string>
+    <string name="Commodity">Commodity</string>
+    <string name="Issued">Issued</string>
+    <string name="Sno">S.no</string>
+
+
+
+</resources>

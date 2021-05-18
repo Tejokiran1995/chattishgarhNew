@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "29.0.1"
+
+    defaultConfig {
+        applicationId "com.visiontek.unipos_pds_demo"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+       /* ndk {
+            abiFilters "arm64-v8a", "armeabi", "armeabi-v7a"
+        }*/
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        encoding "UTF-8"
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+
+//RD
+    implementation files('libs/xom-1.2.10.jar')
+    implementation files('libs/RDServiceAppSupportV0.12.jar')
+    implementation 'com.android.support:multidex:1.0.3'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+   // implementation 'me.dm7.barcodescanner:zxing:1.9'
+
+    implementation files('src/main/libs/IrisAlgo.jar')
+    implementation files('src/main/libs/jpeg.jar')
+    implementation files('src/main/libs/MorphoSmart_SDK_6.26.0.0.jar')
+    implementation files('src/main/libs/ImageSupport-V1.5.jar')
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    implementation 'com.android.support:design:28.1.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+
+    implementation files('src/main/libs/Evolute_UniPOS_SDK_Service_v1.1.14.2.aidl.jar')
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    // For control over item selection of both touch and mouse driven selection
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation("com.squareup.okhttp3:okhttp:4.1.0")
+
+    implementation 'com.github.felHR85:UsbSerial:3.3'
+    implementation files('libs/97bt-android-library.jar')
+    implementation files('libs/commons-net-3.3.jar')
+
+    implementation files('libs/mTerminal100.aar')
+}

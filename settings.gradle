@@ -1,0 +1,2 @@
+rootProject.name='UniPOS_PDS_Demo'
+include ':app'

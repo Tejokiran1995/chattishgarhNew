@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.visiontek.Mantra">
+
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="true"
+        android:configChanges="locale" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <permission
+        android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
+        android:label="@string/app_name" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".Activities.DealerAuthentication"></activity>
+        <activity android:name=".Activities.WeighingActivity" />
+        <activity android:name=".Activities.WeightActivity" />
+
+        <activity android:name=".Activities.ICDS_Details" />
+        <activity android:name=".Activities.Wellfare" />
+        <activity android:name=".Activities.Madad" />
+        <activity android:name=".Activities.MDM" />
+        <activity android:name=".Activities.ICDS" />
+        <activity android:name=".Activities.Beneficiary_Aadhar" />
+        <activity android:name=".Activities.UID_Seeding_Aadhar" />
+        <activity android:name=".Activities.Beneficiary_Details" />
+        <activity android:name=".Activities.Stock_Report" />
+        <activity android:name=".Activities.Daily_Sales_Report" />
+        <activity android:name=".Activities.UID_Details" />
+        <activity android:name=".Activities.Beneficiary_Verification" />
+        <activity android:name=".Activities.Aadhaar_Seeding" />
+        <activity android:name=".Activities.Device" />
+        <activity android:name=".Activities.Inspection" />
+        <activity android:name=".Activities.Reports" />
+        <activity android:name=".Activities.DeviceListActivity" />
+        <activity android:name=".Activities.Others" />
+        <activity android:name=".Activities.Receive_Goods" />
+        <activity android:name=".Activities.Aadhaar_Services" />
+        <activity android:name=".Activities.Issue" />
+        <activity android:name=".Activities.Device_Info" />
+        <activity android:name=".Activities.Device_Update" />
+        <activity android:name=".Activities.Setting">
+
+            <!--
+           <intent-filter>
+               <action android:name="android.intent.action.MAIN" />
+
+               <category android:name="android.intent.category.LAUNCHER" />
+           </intent-filter>
+            -->
+
+        </activity>
+        <activity android:name=".Activities.Print">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name=".Activities.Ration_details">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name=".Activities.Home">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name=".Activities.Member_Details" />
+        <activity android:name=".Activities.Start">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.Dealer_Details">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name=".Activities.Cash_PDS">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+
+        <service
+            android:name=".Utils.UsbService"
+            android:enabled="true" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+    </application>
+
+</manifest>

@@ -59,6 +59,8 @@ public class Aadhaar_Seeding extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_u_i_d__seeding);

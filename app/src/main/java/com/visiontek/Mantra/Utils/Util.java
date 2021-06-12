@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,7 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.visiontek.Mantra.Models.stateBean;
+import com.visiontek.Mantra.Models.DealerDetailsModel.GetURLDetails.stateBean;
 import com.visiontek.Mantra.R;
 
 import org.apache.commons.net.util.Base64;
@@ -41,8 +40,6 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,16 +51,10 @@ import javax.crypto.NoSuchPaddingException;
 
 import static android.content.Context.BATTERY_SERVICE;
 import static android.content.Context.CONNECTIVITY_SERVICE;
+import static com.visiontek.Mantra.Models.AppConstants.dealerConstants;
 
 
 public class Util {
-
-    /*public static String scnid = "1838I014629";*/
-    public static String DEVICEID = "0110000106";
-    public static String VERSION = "2.3";
-    public static String TOKEN = "7797602c3da57f23e57a259b60358622";
-    public static String KEY = "111";
-
 
     public static void generateNoteOnSD(Context context, String sFileName, String sBody) {
         try {
@@ -97,8 +88,8 @@ public class Util {
 
     public static String ConsentForm(Context context)
     {stateBean stateBean=new stateBean();
-          String concent = context.getResources().getString(R.string.part1) + stateBean.getstateReceiptHeaderEn() +
-                 context.getResources().getString(R.string.part2) + stateBean.getstateReceiptHeaderEn() +
+          String concent = context.getResources().getString(R.string.part1) + dealerConstants.stateBean.stateReceiptHeaderEn +
+                 context.getResources().getString(R.string.part2) + dealerConstants.stateBean.stateReceiptHeaderEn +
                  context.getResources().getString(R.string.part3);
        return concent;
     }
@@ -237,10 +228,6 @@ public class Util {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return new String(cipher.doFinal(data));
-    }
-
-    public static String decrypt(String data, String base64PrivateKey) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        return decrypt(Base64.decodeBase64(data.getBytes()), getPrivateKey(base64PrivateKey));
     }
 
 

@@ -3,28 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".Activities.WeighingActivity">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tool"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
-
-
-
-        <TextView
-            android:id="@+id/rd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/RD"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/TextsizeT"
-            android:textStyle="bold" />
 
         <TextView
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
@@ -35,14 +21,10 @@
             android:textColor="@color/white"
             android:textSize="@dimen/TextsizeT"
             android:textStyle="bold" />
-        <Spinner
-            android:id="@+id/options"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"/>
+
     </androidx.appcompat.widget.Toolbar>
     <TextView
-        android:id="@+id/weighing_status"
+        android:id="@+id/weight_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -66,7 +48,7 @@
 
 
         <TextView
-            android:id="@+id/weighing"
+            android:id="@+id/weigh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -95,7 +77,7 @@
             tools:ignore="MissingConstraints">
 
             <Button
-                android:id="@+id/weighing_back"
+                android:id="@+id/weight_back"
                 android:layout_width="@dimen/ButtonW"
                 android:layout_height="@dimen/ButtonH"
                 android:layout_margin="@dimen/ButtonM"
@@ -106,7 +88,7 @@
                 android:textStyle="bold"
                 android:textSize="@dimen/TextsizeB"/>
             <Button
-                android:id="@+id/weighing_confirm"
+                android:id="@+id/weight_confirm"
                 android:layout_width="@dimen/ButtonW"
                 android:layout_height="@dimen/ButtonH"
                 android:layout_margin="@dimen/ButtonM"

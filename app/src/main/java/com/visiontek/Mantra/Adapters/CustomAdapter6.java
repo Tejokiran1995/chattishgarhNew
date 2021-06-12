@@ -10,8 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.visiontek.Mantra.Activities.Inspection;
-import com.visiontek.Mantra.Models.DataModel2;
+import com.visiontek.Mantra.Activities.InspectionActivity;
+import com.visiontek.Mantra.Models.DATAModels.DataModel2;
 import com.visiontek.Mantra.R;
 
 import java.util.ArrayList;
@@ -20,9 +20,9 @@ public class CustomAdapter6 extends RecyclerView.Adapter<CustomAdapter6.MyViewHo
 
     ArrayList<DataModel2> dataSet;
     Context context;
-    private final Inspection.OnClickListener onClickListener;
+    private final InspectionActivity.OnClickListener onClickListener;
 
-    public CustomAdapter6(Inspection context, ArrayList<DataModel2> data, Inspection.OnClickListener onClickListener) {
+    public CustomAdapter6(InspectionActivity context, ArrayList<DataModel2> data, InspectionActivity.OnClickListener onClickListener) {
 
         this.context = context;
         this.dataSet = data;

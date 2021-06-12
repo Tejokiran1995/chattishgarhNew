@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".Activities.WeightActivity">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tool"
@@ -13,18 +12,6 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
 
-
-
-        <TextView
-            android:id="@+id/rd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/RD"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/TextsizeT"
-            android:textStyle="bold" />
         <TextView
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:layout_width="wrap_content"

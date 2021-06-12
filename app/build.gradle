@@ -30,6 +30,11 @@ android {
     }
 }
 
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = "MantraPDS.apk"
+    }
+}
 dependencies {
 
 //RD

@@ -5,7 +5,16 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.visiontek.Mantra.Models.InspectionAuth;
+import com.visiontek.Mantra.Models.AadhaarServicesModel.BeneficiaryVerification.GetURLDetails.BeneficiaryAuth;
+import com.visiontek.Mantra.Models.AadhaarServicesModel.BeneficiaryVerification.GetURLDetails.BeneficiaryDetails;
+import com.visiontek.Mantra.Models.AadhaarServicesModel.BeneficiaryVerification.GetURLDetails.rcMemberDetVerify;
+import com.visiontek.Mantra.Models.AadhaarServicesModel.UIDSeeding.GetURLDetails.UIDAuth;
+import com.visiontek.Mantra.Models.AadhaarServicesModel.UIDSeeding.GetURLDetails.UIDDetails;
+import com.visiontek.Mantra.Models.AadhaarServicesModel.UIDSeeding.GetURLDetails.rcMemberDet;
+import com.visiontek.Mantra.Models.InspectionModel.InspectionAuth;
+import com.visiontek.Mantra.Models.InspectionModel.InspectionDetails;
+import com.visiontek.Mantra.Models.InspectionModel.InspectioncommDetails;
+import com.visiontek.Mantra.Models.InspectionModel.approvals;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -18,27 +27,26 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
     private final String xmlformat;
     private final int type;
     @SuppressLint("StaticFieldLeak")
     private final Context context;
-    ArrayList<String> buffer = new ArrayList<>();
-    private DatabaseHelper databaseHelper;
+
     private String code;
     private HttpURLConnection urlConnection;
     private OnResultListener onResultListener;
     private String msg;
     private String ref;
+    String flow;
+    Object object;
 
     public Aadhaar_Parsing(Context context, String xmlformat, int type) {
         this.context = context;
         this.xmlformat = xmlformat;
         this.type = type;
     }
-
 
     public void setOnResultListener(OnResultListener onResultListener) {
         this.onResultListener = onResultListener;
@@ -51,7 +59,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
 
     @Override
     protected Void doInBackground(String... param) {
-        String url ;
+        String url;
         url = "http://epos.nic.in/ePosServiceCTG/jdCommoneposServiceRes?wsdl";
         runRequest(url);
         return null;
@@ -61,12 +69,12 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         if (onResultListener != null) {
-            onResultListener.onCompleted(code, msg, ref, buffer);
+            onResultListener.onCompleted(code, msg, ref, flow, object);
         }
     }
 
     private void runRequest(String url) {
-        databaseHelper = new DatabaseHelper(context);
+
         try {
             System.out.println("INPUT=" + xmlformat);
             URL Url = new URL(url);
@@ -98,22 +106,22 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                 System.out.println("OUTPU = " + result);
                 if (type == 1) {
                     Util.generateNoteOnSD(context, "UIDSeedingRes.txt", result);
-                    parseXml_UIDSEEDING(result);
+                    object = parseXml_UIDSEEDING(result);
                 } else if (type == 2) {
                     Util.generateNoteOnSD(context, "UIDAuthRes.txt", result);
-                    parseXml_UIDAuth(result);
+                    object = parseXml_UIDAuth(result);
                 } else if (type == 3) {
                     Util.generateNoteOnSD(context, "BenVerificationRes.txt", result);
-                    parseXml_BENVERIFICATION(result);
+                    object = parseXml_BENVERIFICATION(result);
                 } else if (type == 4) {
                     Util.generateNoteOnSD(context, "BenVerificationAuthRes.txt", result);
-                    parseXml_BENVERIFICATIONLOGIN(result);
+                    object = parseXml_BENVERIFICATIONLOGIN(result);
                 } else if (type == 5) {
                     Util.generateNoteOnSD(context, "InspectionDetailsRes.txt", result);
-                    parseXml_INSPECTION(result);
+                    object = parseXml_INSPECTION(result);
                 } else if (type == 6) {
                     Util.generateNoteOnSD(context, "InspectionAuthRes.txt", result);
-                    parseXml_INSPECTION_AUTH(result);
+                    object = parseXml_INSPECTION_AUTH(result);
                 } else if (type == 7) {
                     Util.generateNoteOnSD(context, "InspectionPushRes.txt", result);
                     parseXml_INSPECTION_PUSH(result);
@@ -122,8 +130,8 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                     Util.generateNoteOnSD(context, "InspectionPushRes.txt", result);*/
                 } else if (type == 9) {
                     Util.generateNoteOnSD(context, "StockUploadDetailsRes.txt", result);
-                    parseXml_INSPECTION_AUTH(result);
-                }else if (type == 10) {
+                    parseXml_INSPECTION_PUSH(result);
+                } else if (type == 10) {
                     Util.generateNoteOnSD(context, "LogoutRes.txt", result);
                     parseXml_Logout(result);
                 } else {
@@ -181,12 +189,13 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
             msg = String.valueOf(e);
         } catch (IOException e) {
             e.printStackTrace();
-            code = "1";
+            code = "2";
             msg = String.valueOf(e);
         }
     }
 
-    private void parseXml_UIDAuth(String result) {
+    private UIDAuth parseXml_UIDAuth(String result) {
+        UIDAuth uidAuth = new UIDAuth();
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -198,7 +207,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                     if (xpp.getName().equals("eKYCMemberName")) {
                         eventType = xpp.next();
                         if (eventType == XmlPullParser.TEXT) {
-                            buffer.add(xpp.getText());
+                            uidAuth.eKYCMemberName = (xpp.getText());
                             System.out.println("eKYCMemberName 0 =================" + xpp.getText());
                         }
                     }
@@ -206,7 +215,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCMemberFatherName")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.eKYCMemberFatherName = (xpp.getText());
                                 System.out.println("eKYCMemberFatherName 1*****************************" + xpp.getText());
                             }
                         }
@@ -215,7 +224,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCDOB")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.eKYCDOB = (xpp.getText());
                                 System.out.println("eKYCDOB 2*****************************" + xpp.getText());
                             }
                         }
@@ -225,7 +234,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCPindCode")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.eKYCPindCode = (xpp.getText());
                                 System.out.println("eKYCPindCode 3*****************************" + xpp.getText());
                             }
                         }
@@ -235,7 +244,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCGeneder")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.eKYCGeneder = (xpp.getText());
                                 System.out.println("eKYCGeneder 4*****************************" + xpp.getText());
                             }
                         }
@@ -245,7 +254,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("location")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.location = (xpp.getText());
                                 System.out.println("location 5 *****************************" + xpp.getText());
                             }
                         }
@@ -254,7 +263,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("village")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.village = (xpp.getText());
                                 System.out.println("village 6 *****************************" + xpp.getText());
                             }
                         }
@@ -263,7 +272,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("dist")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.dist = (xpp.getText());
                                 System.out.println("dist 7 *****************************" + xpp.getText());
                             }
                         }
@@ -272,7 +281,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("state")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.state = (xpp.getText());
                                 System.out.println("state 8 *****************************" + xpp.getText());
                             }
                         }
@@ -281,7 +290,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("pincode")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                uidAuth.pincode = (xpp.getText());
                                 System.out.println("pincode  9*****************************" + xpp.getText());
                             }
                         }
@@ -311,14 +320,24 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                     }
 
                     if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("transEntitlementFlow")) {
+                        if (xpp.getName().equals("transaction_flow")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                ref = (xpp.getText());
+                                flow = (xpp.getText());
                                 System.out.println("transEntitlementFlow *****************************" + xpp.getText());
                             }
                         }
                     }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("zdistrTxnId")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                ref = (xpp.getText());
+                                System.out.println("zdistrTxnId *****************************" + xpp.getText());
+                            }
+                        }
+                    }
+
 
                 }
                 eventType = xpp.next();
@@ -329,9 +348,10 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
             msg = String.valueOf(e);
         } catch (IOException e) {
             e.printStackTrace();
-            code = "1";
+            code = "2";
             msg = String.valueOf(e);
         }
+        return uidAuth;
     }
 
     private void parseXml_INSPECTION_PUSH(String result) {
@@ -383,13 +403,13 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
             msg = String.valueOf(e);
         } catch (IOException e) {
             e.printStackTrace();
-            code = "1";
+            code = "2";
             msg = String.valueOf(e);
         }
     }
 
-    private void parseXml_BENVERIFICATIONLOGIN(String result) {
-
+    private BeneficiaryAuth parseXml_BENVERIFICATIONLOGIN(String result) {
+        BeneficiaryAuth beneficiaryAuth = new BeneficiaryAuth();
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -401,7 +421,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                     if (xpp.getName().equals("eKYCMemberName")) {
                         eventType = xpp.next();
                         if (eventType == XmlPullParser.TEXT) {
-                            buffer.add(xpp.getText());
+                            beneficiaryAuth.eKYCMemberName = (xpp.getText());
                             System.out.println("eKYCMemberName 0 =================" + xpp.getText());
                         }
                     }
@@ -409,7 +429,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCMemberFatherName")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.eKYCMemberFatherName = (xpp.getText());
                                 System.out.println("eKYCMemberFatherName 1*****************************" + xpp.getText());
                             }
                         }
@@ -418,7 +438,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCDOB")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.eKYCDOB = (xpp.getText());
                                 System.out.println("eKYCDOB 2*****************************" + xpp.getText());
                             }
                         }
@@ -428,7 +448,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCPindCode")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.eKYCPindCode = (xpp.getText());
                                 System.out.println("eKYCPindCode 3*****************************" + xpp.getText());
                             }
                         }
@@ -438,7 +458,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("eKYCGeneder")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.eKYCGeneder = (xpp.getText());
                                 System.out.println("eKYCGeneder 4*****************************" + xpp.getText());
                             }
                         }
@@ -448,7 +468,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("location")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.location = (xpp.getText());
                                 System.out.println("location 5 *****************************" + xpp.getText());
                             }
                         }
@@ -457,7 +477,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("village")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.village = (xpp.getText());
                                 System.out.println("village 6 *****************************" + xpp.getText());
                             }
                         }
@@ -466,7 +486,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("dist")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.dist = (xpp.getText());
                                 System.out.println("dist 7 *****************************" + xpp.getText());
                             }
                         }
@@ -475,7 +495,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("state")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.state = (xpp.getText());
                                 System.out.println("state 8 *****************************" + xpp.getText());
                             }
                         }
@@ -484,12 +504,11 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("pincode")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                beneficiaryAuth.pincode = (xpp.getText());
                                 System.out.println("pincode  9*****************************" + xpp.getText());
                             }
                         }
                     }
-
 
                     //-------------------------------------------------------------------------------------------
                     //---------------------------------------------------------------------------------------------
@@ -514,11 +533,20 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                     }
 
                     if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("transEntitlementFlow")) {
+                        if (xpp.getName().equals("transaction_flow")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                flow = (xpp.getText());
+                                System.out.println("transaction_flow *****************************" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("zdistrTxnId")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
                                 ref = (xpp.getText());
-                                System.out.println("transEntitlementFlow *****************************" + xpp.getText());
+                                System.out.println("zdistrTxnId *****************************" + xpp.getText());
                             }
                         }
                     }
@@ -535,11 +563,11 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
             code = "1";
             msg = String.valueOf(e);
         }
+        return beneficiaryAuth;
     }
 
-    private void parseXml_INSPECTION_AUTH(String result) {
-        InspectionAuth inspectionAuth=new InspectionAuth();
-
+    private InspectionAuth parseXml_INSPECTION_AUTH(String result) {
+        InspectionAuth inspectionAuth = new InspectionAuth();
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -551,7 +579,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                     if (xpp.getName().equals("auth_transaction_code")) {
                         eventType = xpp.next();
                         if (eventType == XmlPullParser.TEXT) {
-                            buffer.add(xpp.getText());
+                            inspectionAuth.auth_transaction_code = (xpp.getText());
                             System.out.println("auth_transaction_code 0 =================" + xpp.getText());
                         }
                     }
@@ -559,7 +587,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("inspectorDesignation")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                inspectionAuth.inspectorDesignation = (xpp.getText());
                                 System.out.println("inspectorDesignation 1 =================" + xpp.getText());
                             }
                         }
@@ -568,7 +596,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("inspectorName")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add(xpp.getText());
+                                inspectionAuth.inspectorName = (xpp.getText());
                                 System.out.println("inspectorName 2 =====================" + xpp.getText());
                             }
                         }
@@ -599,29 +627,22 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                 }
                 eventType = xpp.next();
             }
+
         } catch (XmlPullParserException e) {
             e.printStackTrace();
             code = "1";
             msg = String.valueOf(e);
         } catch (IOException e) {
             e.printStackTrace();
-            code = "1";
+            code = "";
             msg = String.valueOf(e);
         }
+        return inspectionAuth;
     }
 
-    private void parseXml_UIDSEEDING(String xmlString) {
-        ArrayList<String> bfd_1 = new ArrayList<>();
-        ArrayList<String> bfd_2 = new ArrayList<>();
-        ArrayList<String> bfd_3 = new ArrayList<>();
-        ArrayList<String> memberId = new ArrayList<>();
-        ArrayList<String> memberName = new ArrayList<>();
-        ArrayList<String> memberNamell = new ArrayList<>();
-        ArrayList<String> member_fusion = new ArrayList<>();
-        ArrayList<String> uid = new ArrayList<>();
-        ArrayList<String> w_uid_status = new ArrayList<>();
-
-
+    private UIDDetails parseXml_UIDSEEDING(String xmlString) {
+        UIDDetails uidDetails = new UIDDetails();
+        rcMemberDet rcMemberDet = null;
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -631,9 +652,12 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("bfd_1")) {
+                        rcMemberDet = new rcMemberDet();
+                    }
+                    if (xpp.getName().equals("bfd_1")) {
                         eventType = xpp.next();
                         if (eventType == XmlPullParser.TEXT) {
-                            bfd_1.add(xpp.getText());
+                            rcMemberDet.bfd_1 = (xpp.getText());
                             System.out.println("bfd_1 1 =================" + xpp.getText());
                         }
                     }
@@ -641,7 +665,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("bfd_2")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                bfd_2.add(xpp.getText());
+                                rcMemberDet.bfd_2 = (xpp.getText());
                                 System.out.println("bfd_2 2 =================" + xpp.getText());
                             }
                         }
@@ -650,8 +674,8 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("bfd_3")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                bfd_3.add(xpp.getText());
-                                System.out.println("bfd_3 3 =================" + xpp.getText());
+                                rcMemberDet.bfd_3 = (xpp.getText());
+                                System.out.println("bfd_3 2 =================" + xpp.getText());
                             }
                         }
                     }
@@ -659,8 +683,8 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("memberId")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                memberId.add(xpp.getText());
-                                System.out.println("memberId 4 =================" + xpp.getText());
+                                rcMemberDet.memberId = (xpp.getText());
+                                System.out.println("memberId 2 =================" + xpp.getText());
                             }
                         }
                     }
@@ -668,259 +692,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("memberName")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                memberName.add(xpp.getText());
-                                System.out.println("memberName 5 =================" + xpp.getText());
-                            }
-                        }
-                    }
-
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("memberNamell")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                memberNamell.add(xpp.getText());
-                                System.out.println("memberNamell 6 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("member_fusion")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                member_fusion.add(xpp.getText());
-                                System.out.println("member_fusion 7 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("uid")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                uid.add(xpp.getText());
-                                System.out.println("uid 8 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("w_uid_status")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                w_uid_status.add(xpp.getText());
-                                System.out.println("w_uid_status 9 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    //-------------------------------------------------------------------------------------------
-                    //---------------------------------------------------------------------------------------------
-
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("respCode")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                code = (xpp.getText());
-                                System.out.println("Resp CODE*****************************" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("respMessage")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                msg = (xpp.getText());
-                                System.out.println("Resp MSG*****************************" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("zwadh")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                ref = (xpp.getText());
-                                System.out.println("zwadh *****************************" + xpp.getText());
-                            }
-                        }
-                    }
-                }
-                eventType = xpp.next();
-            }
-
-            databaseHelper.insert_UID(bfd_1,
-                    bfd_2,
-                    bfd_3,
-                    memberId,
-                    memberName,
-                    memberNamell,
-                    member_fusion,
-                    uid,
-                    w_uid_status);
-
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-            code = "1";
-            msg = String.valueOf(e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            code = "1";
-            msg = String.valueOf(e);
-        }
-    }
-
-    private void parseXml_INSPECTION(String xmlString) {
-        ArrayList<String> closingBalance = new ArrayList<>();
-        ArrayList<String> commCode = new ArrayList<>();
-        ArrayList<String> commNameEn = new ArrayList<>();
-        ArrayList<String> commNamell = new ArrayList<>();
-        ArrayList<String> approveKey = new ArrayList<>();
-        ArrayList<String> approveValue = new ArrayList<>();
-
-        try {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(new StringReader(xmlString));
-            int eventType = xpp.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if (xpp.getName().equals("closingBalance")) {
-                        eventType = xpp.next();
-                        if (eventType == XmlPullParser.TEXT) {
-                            closingBalance.add(xpp.getText());
-                            System.out.println("closingBalance 1 =================" + xpp.getText());
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("commCode")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                commCode.add(xpp.getText());
-                                System.out.println("commCode 2 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("commNameEn")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                commNameEn.add(xpp.getText());
-                                System.out.println("commNameEn 3 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("commNamell")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                commNamell.add(xpp.getText());
-                                System.out.println("commNamell 4 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("approveKey")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                approveKey.add(xpp.getText());
-                                System.out.println("uid 5 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("approveValue")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                approveValue.add(xpp.getText());
-                                System.out.println("approveValue 6 =================" + xpp.getText());
-                            }
-                        }
-                    }
-                    //-------------------------------------------------------------------------------------------
-                    //---------------------------------------------------------------------------------------------
-
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("respCode")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                code = (xpp.getText());
-                                System.out.println("Resp CODE*****************************" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("respMessage")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                msg = (xpp.getText());
-                                System.out.println("Resp MSG*****************************" + xpp.getText());
-                            }
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("zwadh")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                ref = (xpp.getText());
-                                System.out.println("zwadh *****************************" + xpp.getText());
-                            }
-                        }
-                    }
-                }
-                eventType = xpp.next();
-            }
-
-            databaseHelper.insert_INSPECTION(
-                    closingBalance,
-                    commCode,
-                    commNameEn,
-                    commNamell
-            );
-
-            databaseHelper.insert_INSPECTION_app(
-                    approveKey, approveValue
-            );
-
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-            code = "1";
-            msg = String.valueOf(e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            code = "1";
-            msg = String.valueOf(e);
-        }
-    }
-
-    private void parseXml_BENVERIFICATION(String xmlString) {
-        ArrayList<String> memberId = new ArrayList<>();
-        ArrayList<String> memberName = new ArrayList<>();
-        ArrayList<String> memberNamell = new ArrayList<>();
-        ArrayList<String> member_fusion = new ArrayList<>();
-        ArrayList<String> uid = new ArrayList<>();
-        ArrayList<String> verification = new ArrayList<>();
-        ArrayList<String> verifyStatus_en = new ArrayList<>();
-        ArrayList<String> verifyStatus_ll = new ArrayList<>();
-        ArrayList<String> w_uid_status = new ArrayList<>();
-
-
-        try {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(new StringReader(xmlString));
-            int eventType = xpp.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if (xpp.getName().equals("memberId")) {
-                        eventType = xpp.next();
-                        if (eventType == XmlPullParser.TEXT) {
-                            memberId.add(xpp.getText());
-                            System.out.println("memberId 1 =================" + xpp.getText());
-                        }
-                    }
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("memberName")) {
-                            eventType = xpp.next();
-                            if (eventType == XmlPullParser.TEXT) {
-                                memberName.add(xpp.getText());
+                                rcMemberDet.memberName = (xpp.getText());
                                 System.out.println("memberName 2 =================" + xpp.getText());
                             }
                         }
@@ -929,7 +701,249 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("memberNamell")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                memberNamell.add(xpp.getText());
+                                rcMemberDet.memberNamell = (xpp.getText());
+                                System.out.println("memberNamell 2 =================" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("member_fusion")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                rcMemberDet.member_fusion = (xpp.getText());
+                                System.out.println("member_fusion 2 =================" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("uid")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                rcMemberDet.uid = (xpp.getText());
+                                System.out.println("uid 2 =================" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("w_uid_status")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                rcMemberDet.w_uid_status = (xpp.getText());
+                                System.out.println("w_uid_status 2 =================" + xpp.getText());
+
+                            }
+                        }
+                    }
+
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("respCode")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                code = (xpp.getText());
+                                System.out.println("Resp CODE*****************************" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("respMessage")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                msg = (xpp.getText());
+                                System.out.println("Resp MSG*****************************" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("zwadh")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                uidDetails.zwadh = (xpp.getText());
+                                System.out.println("zwadh *****************************" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("rationCardId")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                uidDetails.rationCardId = (xpp.getText());
+                                System.out.println("rationCardId *****************************" + xpp.getText());
+                            }
+                        }
+                    }
+                } else if (eventType == XmlPullParser.END_TAG) {
+                    if (xpp.getName().equals("bfd_1")) {
+                        uidDetails.rcMemberDet.add(rcMemberDet);
+                    }
+                }
+                eventType = xpp.next();
+            }
+
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+            code = "1";
+            msg = String.valueOf(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            code = "2";
+            msg = String.valueOf(e);
+        }
+        return uidDetails;
+    }
+
+    private InspectionDetails parseXml_INSPECTION(String xmlString) {
+        InspectionDetails inspectionDetails = new InspectionDetails();
+        approvals approvals = null;
+        InspectioncommDetails inspectioncommDetails = null;
+
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput(new StringReader(xmlString));
+            int eventType = xpp.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (xpp.getName().equals("approvals")) {
+                        approvals = new approvals();
+                    }
+                    if (xpp.getName().equals("commDetails")) {
+                        inspectioncommDetails = new InspectioncommDetails();
+                    }
+                    if (xpp.getName().equals("closingBalance")) {
+                        eventType = xpp.next();
+                        if (eventType == XmlPullParser.TEXT) {
+                            inspectioncommDetails.closingBalance = (xpp.getText());
+                            System.out.println("closingBalance 1 =================" + xpp.getText());
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("commCode")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                inspectioncommDetails.commCode = (xpp.getText());
+                                System.out.println("commCode 2 =================" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("commNameEn")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                inspectioncommDetails.commNameEn = (xpp.getText());
+                                System.out.println("commNameEn 3 =================" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("commNamell")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                inspectioncommDetails.commNamell = (xpp.getText());
+                                System.out.println("commNamell 4 =================" + xpp.getText());
+
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("approveKey")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                approvals.approveKey = (xpp.getText());
+                                System.out.println("uid 5 =================" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("approveValue")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                approvals.approveValue = (xpp.getText());
+                                System.out.println("approveValue 6 =================" + xpp.getText());
+
+                            }
+                        }
+                    }
+                    //-------------------------------------------------------------------------------------------
+                    //---------------------------------------------------------------------------------------------
+
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("respCode")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                code = (xpp.getText());
+                                System.out.println("Resp CODE*****************************" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("respMessage")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                msg = (xpp.getText());
+                                System.out.println("Resp MSG*****************************" + xpp.getText());
+                            }
+                        }
+                    }
+                } else if (eventType == XmlPullParser.END_TAG) {
+                    if (xpp.getName().equals("approvals")) {
+                        inspectionDetails.approvals.add(approvals);
+                    }
+                    if (xpp.getName().equals("commDetails")) {
+                        inspectionDetails.commDetails.add(inspectioncommDetails);
+                    }
+                }
+                eventType = xpp.next();
+            }
+
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+            code = "1";
+            msg = String.valueOf(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            code = "1";
+            msg = String.valueOf(e);
+        }
+        return inspectionDetails;
+    }
+
+    private BeneficiaryDetails parseXml_BENVERIFICATION(String xmlString) {
+        BeneficiaryDetails beneficiaryDetails = new BeneficiaryDetails();
+        rcMemberDetVerify rcMemberDetVerify = null;
+
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput(new StringReader(xmlString));
+            int eventType = xpp.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (xpp.getName().equals("rcMemberDetVerify")) {
+                        rcMemberDetVerify = new rcMemberDetVerify();
+                    }
+                    if (xpp.getName().equals("memberId")) {
+                        eventType = xpp.next();
+                        if (eventType == XmlPullParser.TEXT) {
+                            rcMemberDetVerify.memberId = (xpp.getText());
+                            System.out.println("memberId 1 =================" + xpp.getText());
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("memberName")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                rcMemberDetVerify.memberName = (xpp.getText());
+                                System.out.println("memberName 2 =================" + xpp.getText());
+                            }
+                        }
+                    }
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (xpp.getName().equals("memberNamell")) {
+                            eventType = xpp.next();
+                            if (eventType == XmlPullParser.TEXT) {
+                                rcMemberDetVerify.memberNamell = (xpp.getText());
                                 System.out.println("bfd_3 3 =================" + xpp.getText());
                             }
                         }
@@ -938,7 +952,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("member_fusion")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                member_fusion.add(xpp.getText());
+                                rcMemberDetVerify.member_fusion = (xpp.getText());
                                 System.out.println("member_fusion 4 =================" + xpp.getText());
                             }
                         }
@@ -947,7 +961,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("uid")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                uid.add(xpp.getText());
+                                rcMemberDetVerify.uid = (xpp.getText());
                                 System.out.println("uid 5 =================" + xpp.getText());
                             }
                         }
@@ -957,7 +971,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("verification")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                verification.add(xpp.getText());
+                                rcMemberDetVerify.verification = (xpp.getText());
                                 System.out.println("verification 6 =================" + xpp.getText());
                             }
                         }
@@ -966,7 +980,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("verifyStatus_en")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                verifyStatus_en.add(xpp.getText());
+                                rcMemberDetVerify.verifyStatus_en = (xpp.getText());
                                 System.out.println("verifyStatus_en 7 =================" + xpp.getText());
                             }
                         }
@@ -975,7 +989,7 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("verifyStatus_ll")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                verifyStatus_ll.add(xpp.getText());
+                                rcMemberDetVerify.verifyStatus_ll = (xpp.getText());
                                 System.out.println("verifyStatus_ll 8 =================" + xpp.getText());
                             }
                         }
@@ -984,8 +998,9 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("w_uid_status")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                w_uid_status.add(xpp.getText());
+                                rcMemberDetVerify.w_uid_status = (xpp.getText());
                                 System.out.println("w_uid_status 9 =================" + xpp.getText());
+
                             }
                         }
                     }
@@ -1011,11 +1026,11 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         }
                     }
                     if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("zwadh")) {
+                        if (xpp.getName().equals("wadh")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                ref = (xpp.getText());
-                                System.out.println("zwadh *****************************" + xpp.getText());
+                                beneficiaryDetails.wadh = (xpp.getText());
+                                System.out.println("wadh *****************************" + xpp.getText());
                             }
                         }
                     }
@@ -1023,24 +1038,18 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
                         if (xpp.getName().equals("rationCardId")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
-                                buffer.add (xpp.getText());
-                                System.out.println("zwadh *****************************" + xpp.getText());
+                                beneficiaryDetails.rationCardId = (xpp.getText());
+                                System.out.println("rationCardId *****************************" + xpp.getText());
                             }
                         }
+                    }
+                } else if (eventType == XmlPullParser.END_TAG) {
+                    if (xpp.getName().equals("rcMemberDetVerify")) {
+                        beneficiaryDetails.rcMemberDetVerify.add(rcMemberDetVerify);
                     }
                 }
                 eventType = xpp.next();
             }
-
-            databaseHelper.insert_BEN(memberId,
-                    memberName,
-                    memberNamell,
-                    member_fusion,
-                    uid,
-                    verification,
-                    verifyStatus_en,
-                    verifyStatus_ll,
-                    w_uid_status);
 
         } catch (XmlPullParserException e) {
             e.printStackTrace();
@@ -1048,12 +1057,13 @@ public class Aadhaar_Parsing extends AsyncTask<String, Void, Void> {
             msg = String.valueOf(e);
         } catch (IOException e) {
             e.printStackTrace();
-            code = "1";
+            code = "2";
             msg = String.valueOf(e);
         }
+        return beneficiaryDetails;
     }
 
     public interface OnResultListener {
-        void onCompleted(String error, String msg, String ref, ArrayList<String> buffer);
+        void onCompleted(String error, String msg, String ref, String flow, Object object);
     }
 }

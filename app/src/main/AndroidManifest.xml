@@ -31,34 +31,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.DealerAuthentication"></activity>
-        <activity android:name=".Activities.WeighingActivity" />
-        <activity android:name=".Activities.WeightActivity" />
+        <activity android:name=".Activities.DealerAuthenticationActivity"></activity>
 
-        <activity android:name=".Activities.ICDS_Details" />
-        <activity android:name=".Activities.Wellfare" />
-        <activity android:name=".Activities.Madad" />
-        <activity android:name=".Activities.MDM" />
-        <activity android:name=".Activities.ICDS" />
-        <activity android:name=".Activities.Beneficiary_Aadhar" />
-        <activity android:name=".Activities.UID_Seeding_Aadhar" />
-        <activity android:name=".Activities.Beneficiary_Details" />
-        <activity android:name=".Activities.Stock_Report" />
-        <activity android:name=".Activities.Daily_Sales_Report" />
-        <activity android:name=".Activities.UID_Details" />
-        <activity android:name=".Activities.Beneficiary_Verification" />
-        <activity android:name=".Activities.Aadhaar_Seeding" />
-        <activity android:name=".Activities.Device" />
-        <activity android:name=".Activities.Inspection" />
-        <activity android:name=".Activities.Reports" />
+        <activity android:name=".Activities.BeneficiaryDetailsActivity" />
+        <activity android:name=".Activities.StockReportActivity" />
+        <activity android:name=".Activities.DailySalesReportActivity" />
+        <activity android:name=".Activities.UIDDetailsActivity" />
+        <activity android:name=".Activities.BeneficiaryVerificationActivity" />
+        <activity android:name=".Activities.AadhaarSeedingActivity" />
+        <activity android:name=".Activities.DeviceActivity" />
+        <activity android:name=".Activities.InspectionActivity" />
+        <activity android:name=".Activities.ReportsActivity" />
         <activity android:name=".Activities.DeviceListActivity" />
-        <activity android:name=".Activities.Others" />
-        <activity android:name=".Activities.Receive_Goods" />
-        <activity android:name=".Activities.Aadhaar_Services" />
-        <activity android:name=".Activities.Issue" />
-        <activity android:name=".Activities.Device_Info" />
+        <activity android:name=".Activities.OthersActivity" />
+        <activity android:name=".Activities.ReceiveGoodsActivity" />
+        <activity android:name=".Activities.AadhaarServicesActivity" />
+        <activity android:name=".Activities.IssueActivity" />
+        <activity android:name=".Activities.DeviceInfoActivity" />
         <activity android:name=".Activities.Device_Update" />
-        <activity android:name=".Activities.Setting">
+        <activity android:name=".Activities.SettingActivity">
 
             <!--
            <intent-filter>
@@ -69,7 +60,7 @@
             -->
 
         </activity>
-        <activity android:name=".Activities.Print">
+        <activity android:name=".Activities.PrintActivity">
 
             <!--
             <intent-filter>
@@ -79,7 +70,7 @@
             </intent-filter>
             -->
         </activity>
-        <activity android:name=".Activities.Ration_details">
+        <activity android:name=".Activities.RationDetailsActivity">
 
             <!--
             <intent-filter>
@@ -89,7 +80,7 @@
             </intent-filter>
             -->
         </activity>
-        <activity android:name=".Activities.Home">
+        <activity android:name=".Activities.HomeActivity">
 
             <!--
             <intent-filter>
@@ -99,15 +90,15 @@
             </intent-filter>
             -->
         </activity>
-        <activity android:name=".Activities.Member_Details" />
-        <activity android:name=".Activities.Start">
+        <activity android:name=".Activities.MemberDetailsActivity" />
+        <activity android:name=".Activities.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.Dealer_Details">
+        <activity android:name=".Activities.DealerDetailsActivity">
 
             <!--
             <intent-filter>
@@ -117,7 +108,7 @@
             </intent-filter>
             -->
         </activity>
-        <activity android:name=".Activities.Cash_PDS">
+        <activity android:name=".Activities.CashPDSActivity">
 
             <!--
             <intent-filter>

@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.visiontek.Mantra.Activities.WeighingActivity.MESSAGE_FROM_SERIAL_PORT;
+import static com.visiontek.Mantra.Activities.RationDetailsActivity.MESSAGE_FROM_SERIAL_PORT;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 public class UsbService extends Service {
@@ -103,7 +104,7 @@ public class UsbService extends Service {
     private final UsbSerialInterface.UsbReadCallback mCallback = new UsbSerialInterface.UsbReadCallback() {
         @Override
         public void onReceivedData(byte[] arg0) {
-            String data = new String(arg0, StandardCharsets.UTF_8);
+            String data = new String(arg0, UTF_8);
             if (mHandler != null && MESSAGE_FROM_SERIAL_PORT == 0) {
                 mHandler.obtainMessage(MESSAGE_FROM_SERIAL_PORT, data).sendToTarget();
             }

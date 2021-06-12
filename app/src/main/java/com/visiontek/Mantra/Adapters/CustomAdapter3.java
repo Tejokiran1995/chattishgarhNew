@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.visiontek.Mantra.Models.DataModel3;
+import com.visiontek.Mantra.Models.DATAModels.DataModel3;
 import com.visiontek.Mantra.R;
 
 import org.jetbrains.annotations.NotNull;

@@ -164,6 +164,9 @@ public class MyFTPClientFunctions {
                         Toknow = 40;
                         System.out.println("MyFTPClientFunction...Finding Size.....File Size==" + fsize);
                         return fsize;
+                    }else {
+                        Toknow = 46;
+                        return null;
                     }
                 }
                 Toknow = 401;

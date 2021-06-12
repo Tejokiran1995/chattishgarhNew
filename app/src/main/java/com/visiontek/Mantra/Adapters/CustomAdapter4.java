@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.visiontek.Mantra.Activities.Dealer_Details;
-import com.visiontek.Mantra.Activities.Member_Details;
-import com.visiontek.Mantra.Models.DataModel5;
+import com.visiontek.Mantra.Activities.DealerDetailsActivity;
+import com.visiontek.Mantra.Activities.MemberDetailsActivity;
+import com.visiontek.Mantra.Models.DATAModels.DataModel5;
 import com.visiontek.Mantra.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -26,10 +26,10 @@ public class CustomAdapter4 extends RecyclerView.Adapter<CustomAdapter4.MyViewHo
     Context context;
     int type1;
     private final ArrayList<DataModel5> dataSet;
-    private Member_Details.OnClickListener onClickListener;
-    private final Dealer_Details.OnClickListener onClick;
+    private MemberDetailsActivity.OnClickListener onClickListener;
+    private final DealerDetailsActivity.OnClickListener onClick;
 
-    public CustomAdapter4(Context context, ArrayList<DataModel5> data, Dealer_Details.OnClickListener onClickListener, int type1) {
+    public CustomAdapter4(Context context, ArrayList<DataModel5> data, DealerDetailsActivity.OnClickListener onClickListener, int type1) {
         this.dataSet = data;
         this.context = context;
         this.type1 = type1;

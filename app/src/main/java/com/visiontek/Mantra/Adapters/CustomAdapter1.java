@@ -10,10 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.visiontek.Mantra.Activities.DealerAuthentication;
-import com.visiontek.Mantra.Activities.Ration_details;
-import com.visiontek.Mantra.Activities.Receive_Goods;
-import com.visiontek.Mantra.Models.DataModel1;
+import com.visiontek.Mantra.Activities.DealerAuthenticationActivity;
+import com.visiontek.Mantra.Activities.RationDetailsActivity;
+import com.visiontek.Mantra.Activities.ReceiveGoodsActivity;
+import com.visiontek.Mantra.Models.DATAModels.DataModel1;
 import com.visiontek.Mantra.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -26,13 +26,13 @@ public class CustomAdapter1 extends RecyclerView.Adapter<CustomAdapter1.MyViewHo
     int type;
     int type1;
     private final List<DataModel1> dataSet;
-    private Ration_details.OnClickListener onClickListener;
-    private Receive_Goods.OnClickListener onClick;
-    private DealerAuthentication.OnClickListener Click;
+    private RationDetailsActivity.OnClickListener onClickListener;
+    private ReceiveGoodsActivity.OnClickListener onClick;
+    private DealerAuthenticationActivity.OnClickListener Click;
     private final Context context;
 
 
-    public CustomAdapter1(Context context, ArrayList<DataModel1> data, Ration_details.OnClickListener onClickListener, int type) {
+    public CustomAdapter1(Context context, ArrayList<DataModel1> data, RationDetailsActivity.OnClickListener onClickListener, int type) {
 
         this.dataSet = data;
         this.context = context;
@@ -40,7 +40,7 @@ public class CustomAdapter1 extends RecyclerView.Adapter<CustomAdapter1.MyViewHo
         this.type = type;
     }
 
-    public CustomAdapter1(Context context, ArrayList<DataModel1> data, Receive_Goods.OnClickListener onClick, int type1) {
+    public CustomAdapter1(Context context, ArrayList<DataModel1> data, ReceiveGoodsActivity.OnClickListener onClick, int type1) {
 
         this.dataSet = data;
         this.context = context;
@@ -69,7 +69,6 @@ public class CustomAdapter1 extends RecyclerView.Adapter<CustomAdapter1.MyViewHo
         holder.Rate.setText(data1.getRate());
         holder.Issue.setText(data1.getReq());
         holder.Close.setText(data1.getClose());
-
         LinearLayout lin = holder.linearLayout;
 
         if (data1.isSelected) {
@@ -83,26 +82,19 @@ public class CustomAdapter1 extends RecyclerView.Adapter<CustomAdapter1.MyViewHo
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 for (int i = 0; i < dataSet.size(); i++) {
-
                     dataSet.get(i).isSelected = false;
                 }
-
                 data1.isSelected = true;
-
                 if (type == 1) {
                     onClickListener.onClick_d(position);
                 }
                 if (type1 == 1) {
                     onClick.onClick_d(position);
                 }
-
-
                 notifyDataSetChanged();
             }
         });
-
     }
 
     @Override

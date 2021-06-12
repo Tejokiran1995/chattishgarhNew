@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.visiontek.Mantra.Activities.DealerAuthentication;
-import com.visiontek.Mantra.Activities.Dealer_Details;
-import com.visiontek.Mantra.Activities.Device_Info;
-import com.visiontek.Mantra.Activities.Member_Details;
-import com.visiontek.Mantra.Models.DataModel;
+import com.visiontek.Mantra.Activities.DealerAuthenticationActivity;
+import com.visiontek.Mantra.Activities.DealerDetailsActivity;
+import com.visiontek.Mantra.Activities.DeviceInfoActivity;
+import com.visiontek.Mantra.Activities.MemberDetailsActivity;
+import com.visiontek.Mantra.Models.DATAModels.DataModel;
 import com.visiontek.Mantra.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,30 +29,30 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     Context context;
     int type1;
     private final ArrayList<DataModel> dataSet;
-    private Member_Details.OnClickListener onClickListener;
-    private Dealer_Details.OnClickListener onClick;
-    private DealerAuthentication.OnClickListener Click;
+    private MemberDetailsActivity.OnClickListener onClickListener;
+    private DealerDetailsActivity.OnClickListener onClick;
+    private DealerAuthenticationActivity.OnClickListener Click;
 
-    public CustomAdapter(Context context, ArrayList<DataModel> data, Member_Details.OnClickListener onClickListener, int type) {
+    public CustomAdapter(Context context, ArrayList<DataModel> data, MemberDetailsActivity.OnClickListener onClickListener, int type) {
         this.dataSet = data;
         this.context = context;
         this.type = type;
         this.onClickListener = onClickListener;
     }
 
-    public CustomAdapter(Context context, ArrayList<DataModel> data, Dealer_Details.OnClickListener onClickListener, int type1) {
+    public CustomAdapter(Context context, ArrayList<DataModel> data, DealerDetailsActivity.OnClickListener onClickListener, int type1) {
         this.dataSet = data;
         this.context = context;
         this.type1 = type1;
         this.onClick = onClickListener;
     }
 
-    public CustomAdapter(Context context, ArrayList<DataModel> arraydata, Device_Info.OnClickListener onClickListener) {
+    public CustomAdapter(Context context, ArrayList<DataModel> arraydata, DeviceInfoActivity.OnClickListener onClickListener) {
         this.dataSet = arraydata;
         this.context = context;
     }
 
-    public CustomAdapter(Context context, ArrayList<DataModel> data, DealerAuthentication.OnClickListener onClickListener, int type2) {
+    public CustomAdapter(Context context, ArrayList<DataModel> data, DealerAuthenticationActivity.OnClickListener onClickListener, int type2) {
 
         this.dataSet = data;
         this.context = context;

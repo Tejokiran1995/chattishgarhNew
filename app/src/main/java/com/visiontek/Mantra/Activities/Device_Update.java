@@ -52,7 +52,7 @@ public class Device_Update extends AppCompatActivity {
             fUserName = "rnd",
             fPassword = "rnd123",
             Source = "/rnd/",
-            FTP_file = "sample.apk",
+            FTP_file = "MantraPDS.apk",
             Download = "/rnd/" + FTP_file,
 
     Destination,
@@ -115,7 +115,22 @@ public class Device_Update extends AppCompatActivity {
                 something = context.getResources().getString(R.string.Authentication_Problem);
                 System.out.println(something);
                 Toast.makeText(context, something, Toast.LENGTH_SHORT).show();
-            } else {
+            } else if (msg.what==12){
+                something = context.getResources().getString(R.string.Download_Failed);
+                System.out.println(something);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("File Not Found")
+                        .setCancelable(false)
+                        .setNegativeButton(context.getResources().getString(R.string.Ok), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                falert = builder.create();
+                falert.setTitle(something);
+                falert.show();
+                falert.setCancelable(false);
+            }else {
                 something = context.getResources().getString(R.string.UNKNOWN_ERROR);
                 System.out.println(something);
                 Toast.makeText(context, something, Toast.LENGTH_SHORT).show();
@@ -160,14 +175,12 @@ public class Device_Update extends AppCompatActivity {
         usb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //J="USb/download/";
                 show_error_box(context.getResources().getString(R.string.Connect_your_device_to_the_usb_Port), context.getResources().getString(R.string.USB_Connection));
             }
         });
         gprs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //J="/sdcard/";
                 filesize();
             }
         });
@@ -221,7 +234,10 @@ public class Device_Update extends AppCompatActivity {
                             handler.sendEmptyMessage(6);
                         } else if (ftpclient.Toknow == 45) {
                             handler.sendEmptyMessage(6);
-                        } else {
+                        }
+                        else if (ftpclient.Toknow == 46) {
+                            handler.sendEmptyMessage(6);
+                        }else {
                             handler.sendEmptyMessage(-1);
                         }
                     }
@@ -376,10 +392,7 @@ public class Device_Update extends AppCompatActivity {
         }
     }
 
-
-
     private void install() {
-
         boolean isNonPlayAppAllowed = false;
         try {
             isNonPlayAppAllowed = Settings.Secure.getInt(getContentResolver(), Settings.Secure.INSTALL_NON_MARKET_APPS) == 1;

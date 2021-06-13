@@ -165,7 +165,7 @@
         tools:ignore="MissingConstraints">
 
         <Button
-            android:id="@+id/rc_back"
+            android:id="@+id/back"
             android:layout_width="@dimen/ButtonW"
             android:layout_height="@dimen/ButtonH"
             android:layout_margin="@dimen/ButtonM"
@@ -177,7 +177,7 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/rc_confirm"
+            android:id="@+id/next"
             android:layout_width="@dimen/ButtonW"
             android:layout_height="@dimen/ButtonH"
             android:layout_margin="@dimen/ButtonM"

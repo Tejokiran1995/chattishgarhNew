@@ -3,6 +3,7 @@ package com.visiontek.Mantra.Activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -56,7 +58,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import static com.visiontek.Mantra.Activities.StartActivity.L;
 import static com.visiontek.Mantra.Activities.StartActivity.mp;
 import static com.visiontek.Mantra.Models.AppConstants.DEVICEID;
-import static com.visiontek.Mantra.Models.AppConstants.GETUIDAUTHENTICATION;
+
 import static com.visiontek.Mantra.Models.AppConstants.dealerConstants;
 import static com.visiontek.Mantra.Models.AppConstants.menuConstants;
 import static com.visiontek.Mantra.Utils.Util.ConsentForm;
@@ -197,6 +199,36 @@ public class UIDDetailsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    private void ConsentDialog(String concent) {
+        final Dialog dialog = new Dialog(context, android.R.style.Theme_Dialog);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.consent);
+        Button confirm = (Button) dialog.findViewById(R.id.agree);
+        Button back = (Button) dialog.findViewById(R.id.cancel);
+        TextView tv=(TextView)dialog.findViewById(R.id.consent);
+        tv.setText(concent);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                AadhaarDialog();
+
+            }
+        });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        dialog.show();
+    }
+
     private void ConsentformURL(String consentrequest) {
         pd = ProgressDialog.show(context, context.getResources().getString(R.string.UID_DETAILS), context.getResources().getString(R.string.Consent_Form), true, false);
         Json_Parsing request = new Json_Parsing(context, consentrequest, 3);
@@ -267,30 +299,6 @@ public class UIDDetailsActivity extends AppCompatActivity {
         });
         alert.show();
 
-    }
-
-    private void ConsentDialog(String concent) {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setMessage(concent);
-        alertDialogBuilder.setTitle(context.getResources().getString(R.string.Consent_Form));
-        alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Agree),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        AadhaarDialog();
-
-                    }
-                });
-        alertDialogBuilder.setNegativeButton(context.getResources().getString(R.string.Disagree), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
     }
 
     private void hitURL1(String uidauth) {

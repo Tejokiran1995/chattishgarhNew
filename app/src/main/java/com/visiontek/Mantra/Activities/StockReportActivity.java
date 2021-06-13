@@ -47,7 +47,7 @@ import java.util.concurrent.Executors;
 
 import static com.visiontek.Mantra.Activities.StartActivity.L;
 import static com.visiontek.Mantra.Activities.StartActivity.mp;
-import static com.visiontek.Mantra.Models.AppConstants.GETSTOCKDETAILS;
+
 import static com.visiontek.Mantra.Models.AppConstants.dealerConstants;
 import static com.visiontek.Mantra.Utils.Util.RDservice;
 import static com.visiontek.Mantra.Utils.Util.releaseMediaPlayer;

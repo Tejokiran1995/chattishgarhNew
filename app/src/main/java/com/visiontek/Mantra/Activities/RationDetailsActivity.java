@@ -276,7 +276,7 @@ public class RationDetailsActivity extends AppCompatActivity {
     private void ManualDialog(final int position) {
         final Dialog dialog = new Dialog(context, android.R.style.Theme_Dialog);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCanceledOnTouchOutside(false);
 
         if (memberConstants.commDetails.get(position).weighing.equals("N")) {
             dialog.setContentView(R.layout.activity_weight);
@@ -324,6 +324,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                     float value= Float.parseFloat(enteredweight);
                     if (value==0.0) {
                         memberConstants.commDetails.get(position).requiredQty= String.valueOf(value);
+                        Display(1);
                     }else if (value>0.0){
                         CheckWeight(position, enteredweight, 0);
                     }
@@ -333,6 +334,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                         float value= Float.parseFloat(weighingweight);
                         if (value==0.0) {
                             memberConstants.commDetails.get(position).requiredQty= String.valueOf(value);
+                            Display(1);
                         }else if (value>0.0){
                             CheckWeight(position, weighingweight, 1);
                         }
@@ -446,6 +448,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                     commprice = Float.parseFloat((memberConstants.commDetails.get(i).price));
                     commamount = commprice * commqty;
                     TOTALAMOUNT = TOTALAMOUNT + commamount;
+                    memberConstants.commDetails.get(i).totalPrice= String.valueOf(commamount);
                     str = "<commodityDetail>\n" +
                             "<allocationType>" + memberConstants.commDetails.get(i).allocationType + "</allocationType>\n" +
                             "<allotedMonth>" + memberConstants.commDetails.get(i).allotedMonth + "</allotedMonth>\n" +
@@ -454,7 +457,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                             "<commName>" + memberConstants.commDetails.get(i).commName + "</commName>\n" +
                             "<requiredQuantity>" + memberConstants.commDetails.get(i).requiredQty + "</requiredQuantity>\n" +
                             "<commodityAmount>" + memberConstants.commDetails.get(i).price + "</commodityAmount>\n" +
-                            "<price>" + commamount + "</price>\n" +
+                            "<price>" + memberConstants.commDetails.get(i).totalPrice + "</price>\n" +
                             "</commodityDetail>\n";
                     add.append(str);
                 }
@@ -523,34 +526,15 @@ public class RationDetailsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     private void hitURL(String xmlformat) {
-        Intent print = new Intent(getApplicationContext(), PrintActivity.class);
-        print.putExtra("key", xmlformat);
-        print.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(print);
+        Intent p = new Intent(getApplicationContext(), PrintActivity.class);
+        p.putExtra("key", xmlformat);
+        p.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(p);
     }
 
     public interface OnClickListener {
         void onClick_d(int p);
     }
-
-  /*  private void show_error_box(String msg, String title) {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setMessage(msg);
-        alertDialogBuilder.setTitle(title);
-        alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }*/
-
-
-
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
@@ -637,7 +621,6 @@ public class RationDetailsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (data == null) {
-                System.out.println("NULLLLLLLLLLLLLLLLL");
                 return;
             }
 
@@ -651,9 +634,8 @@ public class RationDetailsActivity extends AppCompatActivity {
         /*String address1 = (String) Objects.requireNonNull(data.getExtras()).get("device_name");*/
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
         try {
-            System.out.println("*********************************9");
             btSocket = createBluetoothSocket(device);
-            System.out.println("*********************************8");
+
         } catch (IOException e) {
             Toast.makeText(getBaseContext(), context.getResources().getString(R.string.Socket_creation_failed), Toast.LENGTH_LONG).show();
             finish();
@@ -780,3 +762,19 @@ public class RationDetailsActivity extends AppCompatActivity {
         }
     }
 }
+
+  /*  private void show_error_box(String msg, String title) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(msg);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }*/

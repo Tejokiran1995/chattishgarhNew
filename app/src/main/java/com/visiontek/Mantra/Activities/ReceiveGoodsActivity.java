@@ -77,8 +77,8 @@ public class ReceiveGoodsActivity extends AppCompatActivity {
         pd = new ProgressDialog(context);
         receiveGoodsDetails = (ReceiveGoodsDetails) getIntent().getSerializableExtra("OBJ");
         trucknumber = findViewById(R.id.tv_truckno);
-        scapfp = findViewById(R.id.rc_confirm);
-        back = findViewById(R.id.rc_back);
+        scapfp = findViewById(R.id.next);
+        back = findViewById(R.id.back);
 
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -129,10 +129,10 @@ public class ReceiveGoodsActivity extends AppCompatActivity {
                     if (Util.networkConnected(context)) {
                         Intent i = new Intent(ReceiveGoodsActivity.this, DealerAuthenticationActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        i.putExtra("OBJ", (Serializable) receiveGoodsModel);
+                        i.putExtra("OBJ",  receiveGoodsModel);
                         startActivity(i);
                     } else {
-                        show_error_box(context.getResources().getString(R.string.Please_check_Consent_Form), context.getResources().getString(R.string.Consent_Form), 0);
+                        show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection),0);
                     }
                 } else {
                     if (mp!=null) {
@@ -170,14 +170,14 @@ public class ReceiveGoodsActivity extends AppCompatActivity {
             }
         });
     }
-
     private boolean check() {
-        tcCommDetails tcCommDetails=new tcCommDetails();
+        tcCommDetails tcCommDetails;
         int size=receiveGoodsDetails.infoTCDetails.get(receiveGoodsModel.select).tcCommDetails.size();
        float val = 0;
         for (int i=0;i<size;i++){
             val= Float.parseFloat(receiveGoodsDetails.infoTCDetails.get(receiveGoodsModel.select).tcCommDetails.get(i).enteredvalue);
             if (val>0.0){
+                tcCommDetails =new tcCommDetails();
                 tcCommDetails.enteredvalue=
                         receiveGoodsDetails.infoTCDetails.get(receiveGoodsModel.select).tcCommDetails.get(i).enteredvalue;
                 tcCommDetails.allotment=
@@ -192,15 +192,21 @@ public class ReceiveGoodsActivity extends AppCompatActivity {
                         receiveGoodsDetails.infoTCDetails.get(receiveGoodsModel.select).tcCommDetails.get(i).schemeId;
                 tcCommDetails.schemeName=
                         receiveGoodsDetails.infoTCDetails.get(receiveGoodsModel.select).tcCommDetails.get(i).schemeName;
+                receiveGoodsModel.tcCommDetails.add(tcCommDetails);
+
             }
         }
         for (int i=0;i<size;i++){
+            System.out.println("==========="+val);
+            val= Float.parseFloat(receiveGoodsDetails.infoTCDetails.get(receiveGoodsModel.select).tcCommDetails.get(i).enteredvalue);
             if (val>0.0){
+                System.out.println("="+val);
                 return true;
             }
         }
         return false;
     }
+
 
     private void DisplayTruck(int position) {
         int tcCommDetailssize=receiveGoodsDetails.infoTCDetails.get(position).tcCommDetails.size();

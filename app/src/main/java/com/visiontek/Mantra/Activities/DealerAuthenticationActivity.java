@@ -3,6 +3,7 @@ package com.visiontek.Mantra.Activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -304,12 +306,9 @@ public class DealerAuthenticationActivity extends AppCompatActivity {
                     pd.dismiss();
                 }
                 if (!error.equals("00")) {
-
                     show_error_box(msg, context.getResources().getString(R.string.Uploading_Stock) + error, 0);
                 } else {
-
-                    show_error_box(msg, context.getResources().getString(R.string.Uploading_Stock) + error, 0);
-
+                    show_error_box(msg, context.getResources().getString(R.string.Uploading_Stock) + error, 2);
                 }
             }
 
@@ -343,6 +342,35 @@ public class DealerAuthenticationActivity extends AppCompatActivity {
             return "0";
         }
     }
+    private void ConsentDialog(String concent) {
+        final Dialog dialog = new Dialog(context, android.R.style.Theme_Dialog);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.consent);
+        Button confirm = (Button) dialog.findViewById(R.id.agree);
+        Button back = (Button) dialog.findViewById(R.id.cancel);
+        TextView tv=(TextView)dialog.findViewById(R.id.consent);
+        tv.setText(concent);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                callScanFP();
+
+            }
+        });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        dialog.show();
+    }
 
     private void show_error_box(String msg, String title, final int i) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
@@ -353,37 +381,13 @@ public class DealerAuthenticationActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-
                         if (i == 1) {
                             callScanFP();
+                        }else if (i==2){
+                            finish();
                         }
-
                     }
                 });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-
-    }
-
-    private void ConsentDialog(String concent) {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setMessage(concent);
-        alertDialogBuilder.setTitle(context.getResources().getString(R.string.Consent_Form));
-        alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Agree),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        callScanFP();
-                    }
-                });
-        alertDialogBuilder.setNegativeButton(context.getResources().getString(R.string.Disagree), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();

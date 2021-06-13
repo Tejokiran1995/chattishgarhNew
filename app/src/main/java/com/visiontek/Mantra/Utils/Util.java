@@ -83,11 +83,11 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static boolean batterylevel(Context context) {
         BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
-        return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) >= 15;
+        return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) >= 30;
     }
 
     public static String ConsentForm(Context context)
-    {stateBean stateBean=new stateBean();
+    {
           String concent = context.getResources().getString(R.string.part1) + dealerConstants.stateBean.stateReceiptHeaderEn +
                  context.getResources().getString(R.string.part2) + dealerConstants.stateBean.stateReceiptHeaderEn +
                  context.getResources().getString(R.string.part3);

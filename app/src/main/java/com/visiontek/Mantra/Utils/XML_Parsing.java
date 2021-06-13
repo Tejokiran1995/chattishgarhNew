@@ -294,7 +294,7 @@ public class XML_Parsing extends AsyncTask<String, Void, Void> {
 
     private LastReceipt parseXml_LastRecipt(String result) {
         LastReceipt lastReceipt=new LastReceipt();
-        LastReceiptComm lastReceiptComm=new LastReceiptComm();
+        LastReceiptComm lastReceiptComm=null;
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -305,6 +305,7 @@ public class XML_Parsing extends AsyncTask<String, Void, Void> {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("availedFps")) {
+                        lastReceiptComm=new LastReceiptComm();
                         eventType = xpp.next();
                         if (eventType == XmlPullParser.TEXT) {
                             lastReceiptComm.availedFps = (xpp.getText());
@@ -774,8 +775,7 @@ public class XML_Parsing extends AsyncTask<String, Void, Void> {
                         }
                     }
 
-                }
-                else  if (eventType == XmlPullParser.END_TAG) {
+                } else  if (eventType == XmlPullParser.END_TAG) {
                     if (xpp.getName().equals("fpsPofflineToken")) {
                         menus.fpsPofflineToken=fpsPofflineToken;
                     }
@@ -2328,8 +2328,7 @@ public class XML_Parsing extends AsyncTask<String, Void, Void> {
                         }
                     }
 
-                }
-                else if (eventType == XmlPullParser.END_TAG){
+                } else if (eventType == XmlPullParser.END_TAG){
                     if (xpp.getName().equals("printBeans")){
                         print.printBeans.add(printBeans);
                     }

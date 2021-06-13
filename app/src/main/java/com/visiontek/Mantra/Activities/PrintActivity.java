@@ -31,7 +31,7 @@ import com.mantra.mTerminal100.printer.PrinterCallBack;
 import com.mantra.mTerminal100.printer.Prints;
 import com.visiontek.Mantra.Adapters.CustomAdapter2;
 import com.visiontek.Mantra.Models.DATAModels.DataModel2;
-import com.visiontek.Mantra.Models.IssueModel.LastReceipt;
+import com.visiontek.Mantra.Models.IssueModel.MemberDetailsModel.Print;
 import com.visiontek.Mantra.R;
 import com.visiontek.Mantra.Utils.TaskPrint;
 import com.visiontek.Mantra.Utils.Util;
@@ -49,7 +49,7 @@ import static com.visiontek.Mantra.Activities.RationDetailsActivity.TOTALAMOUNT;
 
 import static com.visiontek.Mantra.Activities.StartActivity.L;
 import static com.visiontek.Mantra.Activities.StartActivity.mp;
-import static com.visiontek.Mantra.Models.AppConstants.GETPRINTRECEIPT;
+
 import static com.visiontek.Mantra.Models.AppConstants.dealerConstants;
 import static com.visiontek.Mantra.Models.AppConstants.memberConstants;
 import static com.visiontek.Mantra.Utils.Util.releaseMediaPlayer;
@@ -73,7 +73,6 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
             if (ACTION_USB_PERMISSION.equals(action)) {
                 probe();
                 // btnConnect.performClick();
-                Toast.makeText(context, context.getResources().getString(R.string.ConnectUSB), Toast.LENGTH_LONG).show();
                 print.setEnabled(true);
                 synchronized (this) {
                 }
@@ -109,7 +108,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                     Util.generateNoteOnSD(context, "RationReq.txt", ration);
                     hitURL(ration);
                 } else {
-                    show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection));
+                    show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection), 0);
                 }
 
             }
@@ -143,30 +142,27 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onCompleted(String isError, String msg, String ref, String flow, Object object) {
-
                 if (pd.isShowing()) {
                     pd.dismiss();
                 }
-
                 if (!isError.equals("00")) {
                     System.out.println("SESSION TIMED OUT");
-                    show_error_box(msg, "Commodity : " + isError);
-
+                    show_error_box(msg, "Commodity : " + isError, 0);
                 } else {
-                    LastReceipt printReceipt= (LastReceipt) object;
+                    Print printReceipt= (Print) object;
                     String app;
                     StringBuilder add = new StringBuilder();
-                    int printReceiptsize= printReceipt.lastReceiptComm.size();
+                    int printReceiptsize= printReceipt.printBeans.size();
                     for (int i = 0; i <printReceiptsize ; i++) {
-                        app = "  " + printReceipt.lastReceiptComm.get(i).comm_name
-                                + "\n" + printReceipt.lastReceiptComm.get(i).total_quantity+ "  " + "  "
-                                + printReceipt.lastReceiptComm.get(i).carry_over + "  " + "  "
-                                + printReceipt.lastReceiptComm.get(i).retail_price + "  " + "  "
-                                + printReceipt.lastReceiptComm.get(i).commIndividualAmount + "  " + "\n";
+                        app = "  " + printReceipt.printBeans.get(i).comm_name
+                                + "\n" + printReceipt.printBeans.get(i).total_quantity+ "  " + "  "
+                                + printReceipt.printBeans.get(i).carry_over + "  " + "  "
+                                + printReceipt.printBeans.get(i).retail_price + "  " + "  "
+                                + printReceipt.printBeans.get(i).commIndividualAmount + "  " + "\n";
                         add.append(app);
                     }
 
-                    String date = printReceipt.lastReceiptComm.get(0).transaction_time.substring(0, 19);
+                    String date = printReceipt.printBeans.get(0).transaction_time.substring(0, 19);
 
                     String str1,str2,str3,str4,str5;
                     String[] str = new String[4];
@@ -179,9 +175,9 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                          image(str1,"header.bmp",1);
                          str2 = context.getResources().getString(R.string.FPS_Owner_Name) + " :" + dealername + "\n"
                                 + context.getResources().getString(R.string.FPS_No) + " :" +dealerConstants.stateBean.statefpsId + "\n"
-                                + context.getResources().getString(R.string.Name_of_Consumer) + " :" +printReceipt.lastReceiptComm.get(0).comm_name+ "\n"
+                                + context.getResources().getString(R.string.Name_of_Consumer) + " :" +printReceipt.printBeans.get(0).comm_name+ "\n"
                                 + context.getResources().getString(R.string.Card_No) + " :" + printReceipt.rcId + "\n"
-                                + context.getResources().getString(R.string.TransactionID) + " :" + printReceipt.retail_price + "\n"
+                                + context.getResources().getString(R.string.TransactionID) + " :" + printReceipt.receiptId + "\n"
                                 + context.getResources().getString(R.string.Date) + " :" + date + "\n"
                                 + context.getResources().getString(R.string.commodity) + " " + context.getResources().getString(R.string.lifted) + "   " + context.getResources().getString(R.string.rate) + "    " + context.getResources().getString(R.string.price) ;
 
@@ -189,7 +185,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                          str3 = (add)+"";
 
 
-                         str4 = context.getResources().getString(R.string.Total_Amount) + " :" + printReceipt.lastReceiptComm.get(0).tot_amount ;
+                         str4 = context.getResources().getString(R.string.Total_Amount) + " :" + printReceipt.printBeans.get(0).tot_amount ;
 
                         image(str2+str3+str4,"body.bmp",0);
 
@@ -210,9 +206,9 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                         str2 = "\n________________________________\n"
                                 + context.getResources().getString(R.string.FPS_Owner_Name) + "  :" + dealername + "\n"
                                 + context.getResources().getString(R.string.FPS_No) + "          :" + dealerConstants.stateBean.statefpsId + "\n"
-                                + context.getResources().getString(R.string.Name_of_Consumer) + ":" + printReceipt.lastReceiptComm.get(0).comm_name + "\n"
+                                + context.getResources().getString(R.string.Name_of_Consumer) + ":" + printReceipt.printBeans.get(0).comm_name + "\n"
                                 + context.getResources().getString(R.string.Card_No) + "        :" + printReceipt.rcId  + "\n"
-                                + context.getResources().getString(R.string.TransactionID) + "   :" + printReceipt.retail_price + "\n"
+                                + context.getResources().getString(R.string.TransactionID) + "   :" + printReceipt.receiptId + "\n"
                                 + context.getResources().getString(R.string.Date) + "            :" + date + "\n"
                                 + context.getResources().getString(R.string.commodity) + " " + context.getResources().getString(R.string.lifted) + "   " + context.getResources().getString(R.string.rate) + "    " + context.getResources().getString(R.string.price) + "\n"
                                 + "________________________________\n";
@@ -220,7 +216,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                         str3 = (add)
                                 + "________________________________\n";
 
-                        str4 = context.getResources().getString(R.string.Total_Amount) + "    :" + printReceipt.lastReceiptComm.get(0).tot_amount+ "\n"
+                        str4 = context.getResources().getString(R.string.Total_Amount) + "    :" + printReceipt.printBeans.get(0).tot_amount+ "\n"
                                 + "________________________________\n";
 
 
@@ -243,7 +239,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
             Util.image(content,name,align);
         } catch (IOException e) {
             e.printStackTrace();
-            show_error_box(e.toString(),"Image formation Error");
+            show_error_box(e.toString(),"Image formation Error", 0);
         }
     }
 
@@ -270,7 +266,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                             }
                             es.submit(new TaskPrint(mTerminal100API,str,mActivity,context,i));
                         }else {
-                            show_error_box(context.getResources().getString(R.string.Battery_Msg),context.getResources().getString(R.string.Battery));
+                            show_error_box(context.getResources().getString(R.string.Battery_Msg),context.getResources().getString(R.string.Battery),1);
                         }
                     }
                 });
@@ -306,8 +302,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                         print.setEnabled(false);
                         es.submit(new Runnable() {
                             @Override
-                            public void run() {
-                                mTerminal100API.printerOpenTask(mUsbManager, device, context);
+                            public void run() { mTerminal100API.printerOpenTask(mUsbManager, device, context);
                             }
                         });
                     }
@@ -319,7 +314,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
         }
     }
 
-    private void show_error_box(String msg, String title) {
+    private void show_error_box(String msg, String title, final int i) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setMessage(msg);
         alertDialogBuilder.setTitle(title);
@@ -328,6 +323,12 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
+                        if (i==1) {
+                            Intent home = new Intent(context, HomeActivity.class);
+                            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(home);
+                            finish();
+                        }
                     }
                 });
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -393,6 +394,12 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                 // TODO Auto-generated method stub
                 Toast.makeText(context.getApplicationContext(), (bPrintResult == 0) ? getResources().getString(R.string.printsuccess) : getResources().getString(R.string.printfailed) + " " + Prints.ResultCodeToString(bPrintResult), Toast.LENGTH_SHORT).show();
                 mActivity.print.setEnabled(bIsOpened);
+                if (bPrintResult==0){
+                    Intent home = new Intent(context, HomeActivity.class);
+                    home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(home);
+                    finish();
+                }
             }
         });
 
@@ -409,21 +416,20 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
         ArrayList<DataModel2> data= new ArrayList<>();
         int commDetailssize = memberConstants.commDetails.size();
 
-
-
-        float prev,j,k;
+        float commbal,commqty;
         String required;
 
         for (int i = 0; i < commDetailssize; i++) {
-            j= Float.parseFloat((memberConstants.commDetails.get(i).balQty));
-            k= Float.parseFloat((memberConstants.commDetails.get(i).requiredQty));
-            required= String.valueOf(j-k);
-            memberConstants.commDetails.get(i).requiredQty = memberConstants.commDetails.get(i).balQty;
-            data.add(new DataModel2(memberConstants.commDetails.get(i).commName +
-                    "\n(" + memberConstants.commDetails.get(i).totQty + ")",
-                    required,
-                    memberConstants.commDetails.get(i).requiredQty,
-                    memberConstants.commDetails.get(i).totalPrice));
+            commbal= Float.parseFloat((memberConstants.commDetails.get(i).balQty));
+            commqty= Float.parseFloat((memberConstants.commDetails.get(i).requiredQty));
+            required= String.valueOf(commbal-commqty);
+            if (commqty>0.0) {
+                data.add(new DataModel2(memberConstants.commDetails.get(i).commName +
+                        "\n(" + memberConstants.commDetails.get(i).totQty + ")",
+                        required,
+                        memberConstants.commDetails.get(i).requiredQty,
+                        memberConstants.commDetails.get(i).totalPrice));
+            }
         }
         RecyclerView.Adapter adapter = new CustomAdapter2(this, data);
         recyclerView.setAdapter(adapter);

@@ -37,12 +37,9 @@ import com.visiontek.Mantra.Utils.DatabaseHelper;
 import com.visiontek.Mantra.Utils.TelephonyInfo;
 import com.visiontek.Mantra.Utils.Util;
 import com.visiontek.Mantra.Utils.XML_Parsing;
-
 import java.util.List;
 import java.util.Locale;
-
 import static com.visiontek.Mantra.Models.AppConstants.DEVICEID;
-import static com.visiontek.Mantra.Models.AppConstants.GETDEALERDETAILS;
 import static com.visiontek.Mantra.Utils.Util.RDservice;
 import static com.visiontek.Mantra.Utils.Util.releaseMediaPlayer;
 

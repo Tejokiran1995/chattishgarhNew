@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import static com.visiontek.Mantra.Activities.StartActivity.L;
 import static com.visiontek.Mantra.Activities.StartActivity.mp;
 import static com.visiontek.Mantra.Models.AppConstants.DEVICEID;
-import static com.visiontek.Mantra.Models.AppConstants.GETINSPECTIONDETAILS;
-import static com.visiontek.Mantra.Models.AppConstants.GETRECEIVEGOODS;
+
 import static com.visiontek.Mantra.Models.AppConstants.dealerConstants;
 
 import static com.visiontek.Mantra.Utils.Util.RDservice;

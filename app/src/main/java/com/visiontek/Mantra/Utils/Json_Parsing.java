@@ -32,7 +32,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.visiontek.Mantra.Models.AppConstants.GETRECEIVEGOODS;
+
 import static com.visiontek.Mantra.Models.AppConstants.dealerConstants;
 
 public class Json_Parsing {

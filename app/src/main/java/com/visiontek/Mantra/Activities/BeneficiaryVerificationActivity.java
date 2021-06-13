@@ -34,7 +34,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import static com.visiontek.Mantra.Activities.StartActivity.L;
 import static com.visiontek.Mantra.Activities.StartActivity.mp;
-import static com.visiontek.Mantra.Models.AppConstants.GETBENEFICIARYDETAILS;
+
 import static com.visiontek.Mantra.Models.AppConstants.dealerConstants;
 import static com.visiontek.Mantra.Models.AppConstants.menuConstants;
 import static com.visiontek.Mantra.Utils.Util.RDservice;

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.1"
 
     defaultConfig {
-        applicationId "com.visiontek.unipos_pds_demo"
+        applicationId "com.visiontek.chhattisgarhpds"
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
@@ -38,6 +38,8 @@ android.applicationVariants.all { variant ->
 dependencies {
 
 //RD
+    def room_version = "2.3.0"
+
     implementation files('libs/xom-1.2.10.jar')
     implementation files('libs/RDServiceAppSupportV0.12.jar')
     implementation 'com.android.support:multidex:1.0.3'
@@ -72,4 +74,10 @@ dependencies {
     implementation files('libs/commons-net-3.3.jar')
 
     implementation files('libs/mTerminal100.aar')
+
+
+//    implementation "androidx.room:room-runtime:$room_version"
+//    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+
 }

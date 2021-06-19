@@ -186,7 +186,6 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                 {
                     setUpNProceedToPrint(printData,isOnlineTransaction);
                 }
-
             }
             else
             {
@@ -353,10 +352,11 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                                 mp.start();
                             }
                             es.submit(new TaskPrint(mTerminal100API,str,mActivity,context,i));
-                            Intent i = new Intent(PrintActivity.this,CashPDSActivity.class);
+                            /*Intent i = new Intent(PrintActivity.this,CashPDSActivity.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(i);
-
+                            */
+                            finish();
 
                         }else {
                             show_error_box(context.getResources().getString(R.string.Battery_Msg),context.getResources().getString(R.string.Battery),1);

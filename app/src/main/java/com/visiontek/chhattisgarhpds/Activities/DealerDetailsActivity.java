@@ -261,7 +261,8 @@ public class DealerDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void password_Dialog(final String txnType) {
+    private void password_Dialog(final String txnType)
+    {
         if (mp!=null) {
             releaseMediaPlayer(context,mp);
         }
@@ -283,8 +284,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
         alert.setPositiveButton(context.getResources().getString(R.string.Ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dealerModel.EnterPassword = edittext.getText().toString();
-                PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
-                if (!dealerModel.EnterPassword.isEmpty() && partialOnlineData != null && partialOnlineData.getOffPassword().equals(dealerModel.EnterPassword)) {
+
                     if (mp!=null) {
                         releaseMediaPlayer(context,mp);
                     }
@@ -297,8 +297,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                     {
                         proceedinOffline(txnType,dealerModel.EnterPassword);
                     }
-                    else
-                    {
+                    else {
                         String pdealerlogin = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                                 "<SOAP-ENV:Envelope\n" +
                                 "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
@@ -329,9 +328,6 @@ public class DealerDetailsActivity extends AppCompatActivity {
                         hitURLDealerAuthentication(pdealerlogin);
                     }
 
-                } else {
-                    show_error_box(context.getResources().getString(R.string.Please_Enter_a_valid_Password), context.getResources().getString(R.string.Invalid_Password), 0);
-                }
             }
         });
         alert.setNegativeButton(context.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
@@ -340,7 +336,6 @@ public class DealerDetailsActivity extends AppCompatActivity {
         });
         alert.show();
     }
-
     public void proceedinOffline(String txnType,String password)
     {
         String errorMessage = databaseHelper.loginByPassword(this,password);
@@ -356,7 +351,6 @@ public class DealerDetailsActivity extends AppCompatActivity {
         {
             show_error_box("Login Response",errorMessage,-1);
         }
-
     }
 
     private void hitURLDealerAuthentication(String dealerlogin) {

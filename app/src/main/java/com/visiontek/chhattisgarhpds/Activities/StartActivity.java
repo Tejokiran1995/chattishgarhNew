@@ -109,7 +109,7 @@ public class StartActivity extends AppCompatActivity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Util.networkConnected(context)) {
+                if (false && Util.networkConnected(context)) {
                     if (mp!=null) {
                         releaseMediaPlayer(context,mp);
                     }
@@ -122,10 +122,13 @@ public class StartActivity extends AppCompatActivity {
                     }
                     FramexmlforDealerDetails();
                 } else {
-                    if(db.checkForOfflineDistribution() == 0)
+                    int offLineCheckFlag = db.checkForOfflineDistribution();
+                    if(offLineCheckFlag == 0)
                     {
                         password_Dialog("Q");
                     }
+                    else if(offLineCheckFlag == -1)
+                        show_error_box("Invalid offline Data","Offline Data Not available,Please Start in online mode");
                     else
                         show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection));
                 }
@@ -170,7 +173,8 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String enteredPassword = edittext.getText().toString();
                 PartialOnlineData partialOnlineData = db.getPartialOnlineData();
-                if (!enteredPassword.isEmpty() && partialOnlineData != null && partialOnlineData.getOffPassword().equals(enteredPassword)) {
+                if (!enteredPassword.isEmpty() && partialOnlineData != null && partialOnlineData.getOffPassword().equals(enteredPassword))
+                {
                     if (mp!=null) {
                         releaseMediaPlayer(context,mp);
                     }
@@ -260,7 +264,6 @@ public class StartActivity extends AppCompatActivity {
                     show_error_box(msg, context.getResources().getString(R.string.Dealer_Details) + ": " + isError);
                 } else {
                     fpsCommonInfo fpsCommonInfoData = dealerConstants.fpsCommonInfo;
-                    PartialOnlineData partialOnlineData = db.getPartialOnlineData();
 
 //                    {
 //                    int ret = 0;
@@ -283,6 +286,9 @@ public class StartActivity extends AppCompatActivity {
                     if (fpsCommonInfoData.partialOnlineOfflineStatus.equals("Y")) {
                         System.out.println("@@Downling offline data");
                         if (Util.networkConnected(context)) {
+
+                            /*Here You need to Push all Device Data to Server ==>  */
+
                             String keyregister = "{\n" +
                                     "\"fpsId\" : " + "\"" + fpsCommonInfoData.fpsId + "\"" + ",\n" +
                                     "\"sessionId\" : " + "\"" + fpsCommonInfoData.fpsSessionId + "\"" + ",\n" +

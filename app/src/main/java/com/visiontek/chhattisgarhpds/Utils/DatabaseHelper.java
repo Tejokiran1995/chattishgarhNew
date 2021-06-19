@@ -221,7 +221,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("create table " + PRINT_TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT,bal_qty TEXT ,carry_over TEXT,commIndividualAmount TEXT," +
                 "comm_name TEXT, comm_name_ll TEXT, member_name TEXT,member_name_ll TEXT,reciept_id TEXT,retail_price TEXT,scheme_desc_en TEXT," +
-                "scheme_desc_ll TEXT,tot_amount TEXT,total_quantity TEXT,transaction_time TEXT,uid_refer_no TEXT,allocationType TEXT,allotedMonth TEXT,allotedYear TEXT,commCode TEXT)");
+                "scheme_desc_ll TEXT,tot_amount TEXT,total_quantity TEXT,transaction_time TEXT,uid_refer_no TEXT,allocationType TEXT,allotedMonth TEXT,allotedYear TEXT,commCode TEXT,closingBalance TEXT)");
 
         db.execSQL("create table " + MENU_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT,MainMenu TEXT,MenuName TEXT,Slno TEXT,Status TEXT)");
 
@@ -1379,22 +1379,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public String[] getMonthYear(Context context) throws SQLException {
         DatabaseHelper helper = new DatabaseHelper(context);
-        String query = "select allotedMonth,allotedYear from KeyRegister";
-        SQLiteDatabase db = helper.getWritableDatabase();
-        Cursor res =  db.rawQuery(query, null);
-        res.moveToFirst();
         String monthYear[] = new String[2];
+        SQLiteDatabase db = helper.getWritableDatabase();
 
-        while (res.isAfterLast()) {
-            monthYear[0] = res.getString(0);
-            monthYear[1] = res.getString(1);
-            break;
+        try
+        {
+            String query = "select allotedMonth,allotedYear from KeyRegister";
+            Cursor res =  db.rawQuery(query, null);
+            res.moveToFirst();
+
+            if (res.isAfterLast()) {
+                monthYear[0] = res.getString(0);
+                monthYear[1] = res.getString(1);
+            }
+            res.close();
         }
-        res.close();
-
-        db.close();
-        helper.close();
-        return monthYear;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            db.close();
+            helper.close();
+            return monthYear;
+        }
     }
 
     public long insertOrReplacePartialOnlineData(Context context,ContentValues contentValues)
@@ -1510,11 +1518,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         }  catch (ParseException e) {
             e.printStackTrace();
-            ret = "Something Went Wrong,Please Contact Help Desk";
+            ret = "Offline Data Not available,Please Start in online mode";
         }
         catch (Exception e) {
             e.printStackTrace();
-            ret = "Something Went Wrong,Please Contact Help Desk";
+            ret = "Offline Data Not available,Please Start in online mode";
         }
         finally {
             if(sqLiteDatabase != null && sqLiteDatabase.isOpen())
@@ -1669,43 +1677,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.endTransaction();
             if(sqLiteDatabase.isOpen())
                 sqLiteDatabase.close();
+            helper.close();
         }
         return isSuccessful;
     }
 
     public PartialOnlineData getPartialOnlineData() {
-        String query = "select OffPassword,OfflineLogin,OfflineTxnTime,Duration,leftOfflineTime,lastlogindate,lastlogintime,lastlogoutdate,lastlogouttime,AllotMonth,AllotYear,pOfflineStoppedDate from PartialOnlineData";
+
         PartialOnlineData partialOnlineData = null;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(query,null);
-        System.out.println("RESULT>>>>>>>>"+res);
-        if(res.moveToFirst())
+        try
         {
-            partialOnlineData = new PartialOnlineData();
-            System.out.println("+++++++++++Data available in partialOnlineData");
-            partialOnlineData.setOffPassword(res.getString(0));
-            partialOnlineData.setOfflineLogin(res.getString(1));
-            partialOnlineData.setOfflineTxnTime(res.getString(2));
-            partialOnlineData.setDuration(res.getString(3));
-            partialOnlineData.setLeftOfflineTime(res.getString(4));
-            partialOnlineData.setLastlogindate(res.getString(5));
-            partialOnlineData.setLastlogintime(res.getString(6));
-            partialOnlineData.setLastlogoutdate(res.getString(7));
-            partialOnlineData.setLastlogouttime(res.getString(8));
-            partialOnlineData.setAllotMonth(res.getString(9));
-            partialOnlineData.setAllotYear(res.getString(10));
-            partialOnlineData.setpOfflineStoppedDate(res.getString(11));
+            String query = "select OffPassword,OfflineLogin,OfflineTxnTime,Duration,leftOfflineTime,lastlogindate,lastlogintime,lastlogoutdate,lastlogouttime,AllotMonth,AllotYear,pOfflineStoppedDate from PartialOnlineData";
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            if(res.moveToFirst())
+            {
+                partialOnlineData = new PartialOnlineData();
+                System.out.println("+++++++++++Data available in partialOnlineData");
+                partialOnlineData.setOffPassword(res.getString(0));
+                partialOnlineData.setOfflineLogin(res.getString(1));
+                partialOnlineData.setOfflineTxnTime(res.getString(2));
+                partialOnlineData.setDuration(res.getString(3));
+                partialOnlineData.setLeftOfflineTime(res.getString(4));
+                partialOnlineData.setLastlogindate(res.getString(5));
+                partialOnlineData.setLastlogintime(res.getString(6));
+                partialOnlineData.setLastlogoutdate(res.getString(7));
+                partialOnlineData.setLastlogouttime(res.getString(8));
+                partialOnlineData.setAllotMonth(res.getString(9));
+                partialOnlineData.setAllotYear(res.getString(10));
+                partialOnlineData.setpOfflineStoppedDate(res.getString(11));
+            }
+            res.close();
         }
-        if(db.isOpen())
-            db.close();
-        return partialOnlineData;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return partialOnlineData;
+        }
     }
 
     public  int checkForOfflineDistribution()
     {
             PartialOnlineData partialOnlineData = getPartialOnlineData();
 
-            if(partialOnlineData != null && partialOnlineData.getOfflineLogin().equals("Y"))
+            if(partialOnlineData == null ||  partialOnlineData.getOfflineLogin()==null)
+                return -1;
+            else if(partialOnlineData.getOfflineLogin().equals("Y"))
                 return 0;
             else return -2;
     }
@@ -1714,93 +1736,125 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     {
         List<commDetails> commodityDetails= new ArrayList<>();
         db = this.getReadableDatabase();
-        String query = "SELECT KR.allocationType, KR.allotedMonth, KR.allotedYear, KR.totalEntitlement - KR.balanceEntitlement, KR.balanceEntitlement, PO.closingBalance, KR.commNameEn, KR.commNameLl, KR.commcode, KR.Unit, 1, commPrice, 0 requiredQty, KR.totalEntitlement totQty, 'N' weighing, 0 FROM KeyRegister KR, Pos_ob PO WHERE rcId = '"+rcNumber+"' AND KR.commCode = PO.commCode GROUP BY KR.allocationType, KR.AllotMonth, KR.AllotYear, KR.rcId, KR.commCode;";
-        Cursor res = db.rawQuery( query,null,null);
-        res.moveToFirst();
-        System.out.println("query :: "+query+", COUNT :: " + res.getCount());
-        while (!res.isAfterLast()) {
-            commDetails commodity = new commDetails();
-            commodity.setAllocationType(res.getString(0));
-            commodity.setAllotedMonth(res.getString(1));
-            commodity.setAllotedYear(res.getString(2));
-            commodity.setAvailedQty(res.getString(3));
-            commodity.setBalQty(res.getString(4));
-            commodity.setClosingBal(res.getString(5));
-            commodity.setCommName(res.getString(6));
-            commodity.setCommNamell(res.getString(7));
-            commodity.setCommcode(res.getString(8));
-            commodity.setMeasureUnit(res.getString(9));
-            commodity.setMinQty(res.getString(10));
-            commodity.setPrice(res.getString(11));
-            commodity.setRequiredQty(res.getString(12));
-            commodity.setTotQty(res.getString(13));
-            commodity.setWeighing(res.getString(14));
-            commodity.setTotalPrice(res.getString(15));
-            commodityDetails.add(commodity);
-            res.moveToNext();
+        try {
+            String query = "SELECT KR.allocationType, KR.allotedMonth, KR.allotedYear, KR.totalEntitlement - KR.balanceEntitlement, KR.balanceEntitlement, PO.closingBalance, KR.commNameEn, KR.commNameLl, KR.commcode, KR.Unit, 1, commPrice, 0 requiredQty, KR.totalEntitlement totQty, 'N' weighing, 0 FROM KeyRegister KR, Pos_ob PO WHERE rcId = '"+rcNumber+"' AND KR.commCode = PO.commCode GROUP BY KR.allocationType, KR.AllotMonth, KR.AllotYear, KR.rcId, KR.commCode;";
+            Cursor res = db.rawQuery( query,null,null);
+            res.moveToFirst();
+            System.out.println("query :: "+query+", COUNT :: " + res.getCount());
+            while (!res.isAfterLast()) {
+                commDetails commodity = new commDetails();
+                commodity.setAllocationType(res.getString(0));
+                commodity.setAllotedMonth(res.getString(1));
+                commodity.setAllotedYear(res.getString(2));
+                commodity.setAvailedQty(res.getString(3));
+                commodity.setBalQty(res.getString(4));
+                commodity.setClosingBal(res.getString(5));
+                commodity.setCommName(res.getString(6));
+                commodity.setCommNamell(res.getString(7));
+                commodity.setCommcode(res.getString(8));
+                commodity.setMeasureUnit(res.getString(9));
+                commodity.setMinQty(res.getString(10));
+                commodity.setPrice(res.getString(11));
+                commodity.setRequiredQty(res.getString(12));
+                commodity.setTotQty(res.getString(13));
+                commodity.setWeighing(res.getString(14));
+                commodity.setTotalPrice(res.getString(15));
+                commodityDetails.add(commodity);
+                res.moveToNext();
+            }
+            res.close();
         }
-        if(db.isOpen())
-            db.close();
-        return commodityDetails;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return commodityDetails;
+        }
     }
 
     public ExcessData getExcessData(String rcNumber)
     {
         ExcessData excessData = new ExcessData();
         db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("SELECT schemeId, schemeName, memberNameLl, memberNameEn FROM KeyRegister WHERE rcId = '"+rcNumber+"' LIMIT 1; ",null,null);
-        res.moveToFirst();
-        System.out.println("COUNT" + res.getCount());
-        while (!res.isAfterLast()) {
-            excessData.setSchemeId(res.getString(0));
-            excessData.setSchemeName(res.getString(1));
-            excessData.setSchemeNameLocal(res.getString(1));
-            excessData.setMemberName(res.getString(3));
-            excessData.setMemberNameLocal(res.getString(2));
-            res.moveToNext();
+        try
+        {
+            Cursor res = db.rawQuery("SELECT schemeId, schemeName, memberNameLl, memberNameEn FROM KeyRegister WHERE rcId = '"+rcNumber+"' LIMIT 1; ",null,null);
+            res.moveToFirst();
+            System.out.println("COUNT" + res.getCount());
+            while (!res.isAfterLast()) {
+                excessData.setSchemeId(res.getString(0));
+                excessData.setSchemeName(res.getString(1));
+                excessData.setSchemeNameLocal(res.getString(1));
+                excessData.setMemberName(res.getString(3));
+                excessData.setMemberNameLocal(res.getString(2));
+                res.moveToNext();
+            }
+            res.close();
         }
-        if(db.isOpen())
-            db.close();
-        return excessData;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return excessData;
+        }
     }
 
     public Print getPrintDataFromLocal(String rationCardNumber)
     {
         Print print = new Print();
         db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("SELECT bal_qty, carry_over, commIndividualAmount, comm_name, comm_name_ll," +
-                " member_name, member_name_ll, reciept_id, retail_price, scheme_desc_en, scheme_desc_ll," +
-                " tot_amount, total_quantity, transaction_time, uid_refer_no FROM Print_Table;",null,null);
-        res.moveToFirst();
-        System.out.println("COUNT" + res.getCount());
-        while (!res.isAfterLast()) {
-            printBeans printData = new printBeans();
-            printData.setBal_qty(res.getString(0));
-            printData.setCarry_over(res.getString(1));
-            printData.setCommIndividualAmount(res.getString(2));
-            printData.setComm_name(res.getString(3));
-            printData.setComm_name_ll(res.getString(4));
+        try
+        {
+            Cursor res = db.rawQuery("SELECT bal_qty, carry_over, commIndividualAmount, comm_name, comm_name_ll," +
+                    " member_name, member_name_ll, reciept_id, retail_price, scheme_desc_en, scheme_desc_ll," +
+                    " tot_amount, total_quantity, transaction_time, uid_refer_no,allocationType ,allotedMonth ,allotedYear ,commCode ,closingBalance  FROM Print_Table;",null,null);
+            res.moveToFirst();
+            System.out.println("COUNT" + res.getCount());
+            while (!res.isAfterLast()) {
+                printBeans printData = new printBeans();
+                printData.setBal_qty(res.getString(0));
+                printData.setCarry_over(res.getString(1));
+                printData.setCommIndividualAmount(res.getString(2));
+                printData.setComm_name(res.getString(3));
+                printData.setComm_name_ll(res.getString(4));
 
-            printData.setMember_name(res.getString(5));
-            printData.setMember_name_ll(res.getString(6));
-            printData.setReciept_id(res.getString(7));
-            printData.setRetail_price(res.getString(8));
-            printData.setScheme_desc_en(res.getString(9));
-            printData.setScheme_desc_ll(res.getString(10));
-            printData.setTot_amount(res.getString(11));
-            printData.setTotal_quantity(res.getString(12));
-            printData.setTransaction_time(res.getString(13));
-            printData.setUid_refer_no(res.getString(14));
-            print.printBeans.add(printData);
-            res.moveToNext();
+                printData.setMember_name(res.getString(5));
+                printData.setMember_name_ll(res.getString(6));
+                printData.setReciept_id(res.getString(7));
+                printData.setRetail_price(res.getString(8));
+                printData.setScheme_desc_en(res.getString(9));
+                printData.setScheme_desc_ll(res.getString(10));
+                printData.setTot_amount(res.getString(11));
+                printData.setTotal_quantity(res.getString(12));
+                printData.setTransaction_time(res.getString(13));
+                printData.setUid_refer_no(res.getString(14));
+                printData.setAllocationType(res.getString(15));
+                printData.setAllotedMonth(res.getString(16));
+                printData.setAllotedYear(res.getString(17));
+                printData.setCommCode(res.getString(18));
+                printData.setClosingBal(res.getString(19));
+                print.printBeans.add(printData);
+                res.moveToNext();
+            }
+            res.close();
+            print.rcId = rationCardNumber;
+            print.receiptId = print.printBeans.get(0).getReciept_id();
         }
-
-        if(db.isOpen())
-            db.close();
-
-        print.rcId = rationCardNumber;
-        print.receiptId = print.printBeans.get(0).getReciept_id();
-        return print;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return print;
+        }
     }
 
     class ExcessData
@@ -1855,84 +1909,175 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<drBean> getofflineSaleRecords(String date)
     {
         List<drBean> drBeanList = new ArrayList<>();
-        String query = "SELECT commNameLl, commNameEn, SM.schemeName, sum(IssuedQty) sale, count( * ) total_cards FROM BenfiaryTxn BFT, commodityMaster CM, schemeMaster SM WHERE Date(DateTime) = Date('"+date+"') AND CM.commCode = BFT.commCode AND BFT.SchemeId = SM.SchemeId GROUP BY BFT.SchemeId, BFT.commCode;";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery(query,null);
-        System.out.println("RESULT>>>>>>>>"+res);
-        res.moveToFirst();
-        while(!res.isAfterLast())
-        {
-            drBean drBeanItem = new drBean();
-            System.out.println("+++++++++++Data available in partialOnlineData");
-            drBeanItem.setCommNamell(res.getString(0));
-            drBeanItem.setComm_name(res.getString(1));
-            drBeanItem.setSchemeName(res.getString(2));
-            drBeanItem.setSale(res.getString(3));
-            drBeanItem.setTotal_cards(res.getString(4));
-            drBeanList.add(drBeanItem);
-            res.moveToNext();
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            String query = "SELECT commNameLl, commNameEn, SM.schemeName, sum(IssuedQty) sale, count( * ) total_cards FROM BenfiaryTxn BFT, commodityMaster CM, schemeMaster SM WHERE Date(DateTime) = Date('"+date+"') AND CM.commCode = BFT.commCode AND BFT.SchemeId = SM.SchemeId GROUP BY BFT.SchemeId, BFT.commCode;";
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            while(!res.isAfterLast())
+            {
+                drBean drBeanItem = new drBean();
+                System.out.println("+++++++++++Data available in partialOnlineData");
+                drBeanItem.setCommNamell(res.getString(0));
+                drBeanItem.setComm_name(res.getString(1));
+                drBeanItem.setSchemeName(res.getString(2));
+                drBeanItem.setSale(res.getString(3));
+                drBeanItem.setTotal_cards(res.getString(4));
+                drBeanList.add(drBeanItem);
+                res.moveToNext();
+            }
+            res.close();
         }
-        if(db.isOpen())
-            db.close();
-        return drBeanList;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (db.isOpen())
+                db.close();
+            return drBeanList;
+        }
     }
 
     public String getOfflineDealerName()
     {
         String dealerName = "";
-        String query = "SELECT Dealers_Names FROM dealers_table;";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery(query,null);
-        System.out.println("RESULT>>>>>>>>"+res);
-        res.moveToFirst();
-        if(!res.isAfterLast())
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
         {
-            dealerName = res.getString(0);
+            String query = "SELECT Dealers_Names FROM dealers_table;";
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            if(!res.isAfterLast())
+            {
+                dealerName = res.getString(0);
+            }
+            res.close();
         }
-        if(db.isOpen())
-            db.close();
-        return dealerName;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return dealerName;
+        }
     }
 
     public  ArrayList<astockBean> getOfflineCurrentStock()
     {
         ArrayList<astockBean> astockBeans = new ArrayList<>();
         String query = "SELECT A.commNameEn, B.SchemeId, A.closingBalance + ifnull(B.issueQty,0), ifnull(B.issueQty,0), A.closingBalance FROM ( SELECT commCode, commNameEn, closingBalance FROM Pos_Ob ) A LEFT JOIN ( SELECT CommCode, SchemeId, sum(IssuedQty) issueQty FROM BenfiaryTxn GROUP BY CommCode ) B ON A.commCode = B.CommCode;";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery(query,null);
-        System.out.println("RESULT>>>>>>>>"+res);
-        res.moveToFirst();
-        while (!res.isAfterLast())
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
         {
-            astockBean astockBeanItem = new astockBean();
-            astockBeanItem.setComm_name(res.getString(0));
-            astockBeanItem.setScheme_desc_en("-");
-            astockBeanItem.setTotal_quantity(res.getString(2));
-            astockBeanItem.setIssued_qty(res.getString(3));
-            astockBeanItem.setClosing_balance(res.getString(4));
-            astockBeans.add(astockBeanItem);
-            res.moveToNext();
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            while (!res.isAfterLast())
+            {
+                astockBean astockBeanItem = new astockBean();
+                astockBeanItem.setComm_name(res.getString(0));
+                astockBeanItem.setScheme_desc_en("-");
+                astockBeanItem.setTotal_quantity(res.getString(2));
+                astockBeanItem.setIssued_qty(res.getString(3));
+                astockBeanItem.setClosing_balance(res.getString(4));
+                astockBeans.add(astockBeanItem);
+                res.moveToNext();
+            }
+            res.close();
         }
-        if(db.isOpen())
-            db.close();
-        return astockBeans;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return astockBeans;
+        }
     }
 
-    public int clearPrintData()
+    public int clearPrintData(Context context)
     {
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        PartialOnlineData partialOnlineData = getPartialOnlineData();
-        int numOfRowsDeleted = sqLiteDatabase.delete("Print_Table",null,null);
-        Log.d("[clearPrintData]","Number Of Rows Deleted :: "+numOfRowsDeleted);
-        return  numOfRowsDeleted;
+        DatabaseHelper helper = new DatabaseHelper(context);
+        SQLiteDatabase sqLiteDatabase = helper.getWritableDatabase();
+        int numOfRowsDeleted = 0;
+        try
+        {
+            numOfRowsDeleted = sqLiteDatabase.delete("Print_Table",null,null);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (sqLiteDatabase != null && sqLiteDatabase.isOpen())
+                sqLiteDatabase.close();
+            helper.close();
+            Log.d("[clearPrintData]","Number Of Rows Deleted :: "+numOfRowsDeleted);
+            return  numOfRowsDeleted;
+        }
     }
 
-    public long insertPrintItem(ContentValues contentValues)
+    public long insertPrintItem(Context context,ContentValues contentValues)
     {
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        long numOfRowsEffected = sqLiteDatabase.insert("Print_Table",null,contentValues);
-        Log.d("[insertPrintItem]","Number Of Rows effected :: "+numOfRowsEffected);
-        return  numOfRowsEffected;
+        DatabaseHelper helper = new DatabaseHelper(context);
+        SQLiteDatabase sqLiteDatabase = helper.getWritableDatabase();
+        long numOfRowsEffected = 0;
+        try
+        {
+            numOfRowsEffected = sqLiteDatabase.insert("Print_Table",null,contentValues);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(sqLiteDatabase != null && sqLiteDatabase.isOpen())
+                sqLiteDatabase.close();
+            helper.close();
+            Log.d("[insertPrintItem]","Number Of Rows effected :: "+numOfRowsEffected);
+            return  numOfRowsEffected;
+        }
+    }
+
+    public int checkBalanceEntitlement(Context context,String rcNumber)
+    {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        int count = 0;
+        SQLiteDatabase sqLiteDatabase = databaseHelper.getReadableDatabase();
+
+        try
+        {
+            String query = "SELECT A.carry_over, A.allocationType, A.allotedMonth, A.allotedYear, A.commCode, ifnull(B.balanceEntitlement,0.0) balanceQty, A.carry_over issueQty FROM Print_Table A LEFT JOIN ( SELECT commCode, balanceEntitlement, allocationType, allotedMonth, allotedYear FROM KeyRegister WHERE rcId = '"+rcNumber+"' ) B ON A.commCode = B.commCode AND A.allocationType = B.allocationType AND A.allotedMonth = B.allotedMonth AND A.allotedYear = B.allotedYear WHERE balanceQty + 0 < issueQty + 0; ";
+            Log.e("checkBalanceEntitlement","query :: "+query);
+
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            while (!res.isAfterLast())
+            {
+                count++;
+                res.moveToNext();
+            }
+            res.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            count = -1;
+        }
+
+        finally {
+            if(sqLiteDatabase != null && sqLiteDatabase.isOpen())
+                sqLiteDatabase.close();
+            databaseHelper.close();
+            return count;
+        }
     }
 }
 

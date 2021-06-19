@@ -1507,10 +1507,10 @@ public class XML_Parsing extends AsyncTask<String, Void, Void> {
                 eventType = xpp.next();
             }
 
-            ContentValues cv = new ContentValues();
-            cv.put("OffPassword",offlinePassword);
-            long x = databaseHelper.insertOrReplacePartialOnlineData(context,cv);
-            System.out.println("insertOrReplacePartialOnlineData returned*****************************" + x);
+//            ContentValues cv = new ContentValues();
+//            cv.put("OffPassword",offlinePassword);
+//            long x = databaseHelper.insertOrReplacePartialOnlineData(context,cv);
+//            System.out.println("insertOrReplacePartialOnlineData returned*****************************" + x);
 
         } catch (XmlPullParserException e) {
             e.printStackTrace();

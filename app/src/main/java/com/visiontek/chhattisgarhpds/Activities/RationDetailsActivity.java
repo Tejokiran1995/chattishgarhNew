@@ -349,7 +349,10 @@ public class RationDetailsActivity extends AppCompatActivity {
                 dialog.dismiss();
                 if (memberConstants.commDetails.get(position).weighing.equals("N")) {
                     String enteredweight = weight.getText().toString();
+                    if(enteredweight.isEmpty())
+                        enteredweight = "0";
                     float value= Float.parseFloat(enteredweight);
+
                     if (value==0.0) {
                         memberConstants.commDetails.get(position).requiredQty= String.valueOf(value);
                         Display(1);
@@ -472,7 +475,7 @@ public class RationDetailsActivity extends AppCompatActivity {
         StringBuilder add = new StringBuilder();
         String str;
         int offlineEleFlag = databaseHelper.checkForOfflineDistribution();
-        databaseHelper.clearPrintData();
+        databaseHelper.clearPrintData(context);
         int userCommModelssize = memberConstants.commDetails.size();
         float commprice,commqty,commamount;
         DateFormat dateFormat = new SimpleDateFormat("hhmmss");
@@ -528,8 +531,8 @@ public class RationDetailsActivity extends AppCompatActivity {
                         contentValues.put("allotedMonth",memberConstants.commDetails.get(i).allotedMonth);
                         contentValues.put("allotedYear", memberConstants.commDetails.get(i).allotedYear);
                         contentValues.put("closingBalance", memberConstants.commDetails.get(i).closingBal);
-                        long x = databaseHelper.insertPrintItem(contentValues);
-                        if(x != 1)
+                        long x = databaseHelper.insertPrintItem(context,contentValues);
+                        if(x < 1)
                         {
                             Log.d("add_comm()","insertPrintItem effctedRows = "+x+" ,So returning from error from here");
                             return "";
@@ -537,6 +540,17 @@ public class RationDetailsActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            if(offlineEleFlag == 0)
+            {
+                int balanceNotAvailableItemCount = databaseHelper.checkBalanceEntitlement(context,rationCardNo);
+                if(balanceNotAvailableItemCount != 0)
+                {
+                    show_error_box("InSuffiecient Offline Entitlement","Balance Qty not available for Some Items");
+                    return "";
+                }
+            }
+
             if (add.length()>0) {
                 return String.valueOf(add);
             }
@@ -592,6 +606,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                     p.putExtra("rationCardNo", rationCardNo);
                     p.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(p);
+                    finish();
                 }
                 else
                    show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection));

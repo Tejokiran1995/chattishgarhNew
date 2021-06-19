@@ -145,7 +145,8 @@ public class DailySalesReportActivity extends AppCompatActivity implements Print
                 System.out.println(mn);
                 if ( d.length()==10 && da>=1 && da<=31 && mn<=12 & mn>=1){*/
 
-                if (!date.equals("dd/MM/yyyy") && date.length()>0) {
+                if (!date.equals("dd/MM/yyyy") && date.length()>0)
+                {
                     PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
                     if(!partialOnlineData.getOfflineLogin().equals("Y") && networkConnected(context)) {
                         String sale = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +

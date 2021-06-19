@@ -310,6 +310,7 @@ public class MemberDetailsActivity extends AppCompatActivity {
                             ration.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             ration.putExtra("OBJ", memberModel);
                             ration.putExtra("txnType","O");
+                            ration.putExtra("rationCardNo",memberConstants.carddetails.rcId);
                             startActivity(ration);
                             finish();
                         }
@@ -398,6 +399,7 @@ public class MemberDetailsActivity extends AppCompatActivity {
                     ration.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     ration.putExtra("OBJ",  memberModel);
                     ration.putExtra("txnType", txnType);
+                    ration.putExtra("rationCardNo",memberConstants.carddetails.rcId);
                     startActivity(ration);
                     finish();
                 }
@@ -496,6 +498,7 @@ public class MemberDetailsActivity extends AppCompatActivity {
                     ration.putExtra("REF",ref);
                     ration.putExtra("OBJ", (Serializable) memberModel);
                     ration.putExtra("txnType",txnType);
+                    ration.putExtra("rationCardNo",memberConstants.carddetails.rcId);
                     startActivity(ration);
                     finish();
                 }
@@ -826,6 +829,7 @@ public class MemberDetailsActivity extends AppCompatActivity {
             ration.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             ration.putExtra("OBJ", (Serializable) memberModel);
             ration.putExtra("txnType",txnType);
+            ration.putExtra("rationCardNo",memberConstants.carddetails.rcId);
             startActivity(ration);
             finish();
         }

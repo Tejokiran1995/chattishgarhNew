@@ -16,6 +16,8 @@ import com.visiontek.chhattisgarhpds.Models.PartialOnlineData;
 import com.visiontek.chhattisgarhpds.Models.ReportsModel.DailySalesDetails.drBean;
 import com.visiontek.chhattisgarhpds.Models.ReportsModel.Stockdetails.StockDetails;
 import com.visiontek.chhattisgarhpds.Models.ReportsModel.Stockdetails.astockBean;
+import com.visiontek.chhattisgarhpds.Models.UploadingModels.CommWiseData;
+import com.visiontek.chhattisgarhpds.Models.UploadingModels.StockData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1536,16 +1538,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         PartialOnlineData partialOnlineData = null;
         try {
             partialOnlineData = getPartialOnlineData();
-            DateFormat dateFormat = new SimpleDateFormat("hh");
-            int currentHour = Integer.parseInt(dateFormat.format(new Date()).toString());
-            int allowedfrom  = Integer.parseInt(partialOnlineData.getOfflineTxnTime().substring(0,partialOnlineData.getOfflineTxnTime().indexOf("AM")));
-            int allowedto  = Integer.parseInt(partialOnlineData.getOfflineTxnTime().substring(partialOnlineData.getOfflineTxnTime().indexOf("-")+1,partialOnlineData.getOfflineTxnTime().indexOf("PM")));
-            if(currentHour < allowedfrom || currentHour > allowedto)
             {
-                Log.e("[txnAllotedBetweenTime]","This not allowed time to login");
-                return -3;
+                String time[];
+                time = partialOnlineData.getOfflineTxnTime().split("-");
+                SimpleDateFormat parser = new SimpleDateFormat("hhaa");
+                Date startTime = parser.parse(time[0]);
+                Date endTimme = parser.parse(time[1]);
+                Date userDate = parser.parse(parser.format(new Date()));
+                if (userDate.before(startTime) || userDate.after(endTimme)) {
+                    Log.e("[txnAllotedBetweenTime]","This not allowed time to login");
+                    return -3;
+                }
             }
-
 
             {
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -1641,7 +1645,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         contentValues.put("RecptId",deviceTxnId);//Q How to generate?
                         contentValues.put("MemberName",excessData.getMemberName());//Q Not showing members in Offline ,then what shoud take?
                         contentValues.put("DateTime",orderDateTime);
-                        contentValues.put("TxnUploadSts","0");
+                        contentValues.put("TxnUploadSts","N");
                         contentValues.put("TxnType",txnType);//O,Q,P
                         contentValues.put("AllotMonth",printBeanItem.getAllotedMonth());
                         contentValues.put("AllotYear",printBeanItem.getAllotedYear());
@@ -2047,6 +2051,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int checkBalanceEntitlement(Context context,String rcNumber)
     {
+
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         int count = 0;
         SQLiteDatabase sqLiteDatabase = databaseHelper.getReadableDatabase();
@@ -2056,7 +2061,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String query = "SELECT A.carry_over, A.allocationType, A.allotedMonth, A.allotedYear, A.commCode, ifnull(B.balanceEntitlement,0.0) balanceQty, A.carry_over issueQty FROM Print_Table A LEFT JOIN ( SELECT commCode, balanceEntitlement, allocationType, allotedMonth, allotedYear FROM KeyRegister WHERE rcId = '"+rcNumber+"' ) B ON A.commCode = B.commCode AND A.allocationType = B.allocationType AND A.allotedMonth = B.allotedMonth AND A.allotedYear = B.allotedYear WHERE balanceQty + 0 < issueQty + 0; ";
             Log.e("checkBalanceEntitlement","query :: "+query);
 
-            Cursor res = db.rawQuery(query,null);
+            Cursor res = sqLiteDatabase.rawQuery(query,null);
             System.out.println("RESULT>>>>>>>>"+res);
             res.moveToFirst();
             while (!res.isAfterLast())
@@ -2079,6 +2084,138 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return count;
         }
     }
+
+    public  List<CommWiseData> getPendingOfflineData()
+    {
+        List<CommWiseData> fpsOfflineTransResponses = new ArrayList<>();
+        String query = "select RcId,CommCode,TotQty,BalQty,SchemeId,IssuedQty,RecptId,commAmount,TotAmt,Rate,MemberName,DateTime,TxnType,AllotMonth,AllotYear,allocationType from BenfiaryTxn where TxnUploadSts = 'N' limit 20";
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
+        {
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            while (!res.isAfterLast())
+            {
+                CommWiseData commWiseData = new CommWiseData();
+                commWiseData.setRcId(res.getString(0));
+                commWiseData.setCommCode(res.getString(1));
+                commWiseData.setTotalEntitlement(res.getString(2));
+                commWiseData.setBalanceEntitlement(res.getString(3));
+                commWiseData.setSchemeId(res.getString(4));
+                commWiseData.setIssueQty(res.getString(5));
+                commWiseData.setReceiptId(res.getString(6));
+                commWiseData.setCommAmount(res.getString(7));
+                commWiseData.setTotalAmount(res.getString(8));
+                commWiseData.setCommPrice(res.getString(9));
+                commWiseData.setHeadOfTheFamily(res.getString(10));
+                commWiseData.setTransactionTime(res.getString(11));
+                commWiseData.setTransMode(res.getString(12));
+                commWiseData.setAllotedMonth(res.getString(13));
+                commWiseData.setAllotedYear(res.getString(14));
+                commWiseData.setAllocationType(res.getString(15));
+                //commWiseData.set(res.getString(4));
+                fpsOfflineTransResponses.add(commWiseData);
+                res.moveToNext();
+            }
+            res.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return fpsOfflineTransResponses;
+        }
+    }
+
+    public List<StockData> getPendingStock()
+    {
+        List<StockData> penStockData = new ArrayList<>();
+        String query = "select commCode,closingBalance from Pos_Ob";
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
+        {
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            while (!res.isAfterLast())
+            {
+                StockData stockData = new StockData();
+                stockData.setCommCode(res.getString(0));
+                stockData.setClosingBalance(res.getString(1));
+                penStockData.add(stockData);
+                res.moveToNext();
+            }
+            res.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return penStockData;
+        }
+    }//select count(*) from BenfiaryTxn where TxnType IN('P','Q')
+
+    public int getTotCommodityTxns()
+    {
+        int count = 0;
+        String query = "select count(*) from BenfiaryTxn where TxnType IN('P','Q')";
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
+        {
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            if (!res.isAfterLast())
+            {
+                count = res.getInt(0);
+            }
+            res.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return count;
+        }
+    }
+
+    public int getPenCommodityTxns()
+    {
+        int count = 0;
+        String query = "select count(*) from BenfiaryTxn where TxnType IN('P','Q') and TxnUploadSts ='N'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
+        {
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            if (!res.isAfterLast())
+            {
+                count = res.getInt(0);
+            }
+            res.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return count;
+        }
+    }
+
 }
 
 

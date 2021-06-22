@@ -283,21 +283,23 @@ public class DealerDetailsActivity extends AppCompatActivity {
         alert.setView(edittext);
         alert.setPositiveButton(context.getResources().getString(R.string.Ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+
                 dealerModel.EnterPassword = edittext.getText().toString();
 
-                    if (mp!=null) {
-                        releaseMediaPlayer(context,mp);
+                if(!dealerModel.EnterPassword.isEmpty() && dealerConstants.fpsCommonInfo.dealer_password.equals(dealerModel.EnterPassword)) {
+
+
+                    if (mp != null) {
+                        releaseMediaPlayer(context, mp);
                     }
                     if (L.equals("hi")) {
                     } else {
                         mp = mp.create(context, R.raw.c100178);
                         mp.start();
                     }
-                    if(txnType.equals("Q"))
-                    {
-                        proceedinOffline(txnType,dealerModel.EnterPassword);
-                    }
-                    else {
+                    if (txnType.equals("Q")) {
+                        proceedinOffline(txnType, dealerModel.EnterPassword);
+                    } else {
                         String pdealerlogin = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                                 "<SOAP-ENV:Envelope\n" +
                                 "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
@@ -327,6 +329,11 @@ public class DealerDetailsActivity extends AppCompatActivity {
                         Util.generateNoteOnSD(context, "DealerPasswordReq.txt", pdealerlogin);
                         hitURLDealerAuthentication(pdealerlogin);
                     }
+                }else
+                {
+                    show_error_box(context.getResources().getString(R.string.Please_Enter_a_valid_Password), context.getResources().getString(R.string.Invalid_Password), 0);
+                }
+
 
             }
         });

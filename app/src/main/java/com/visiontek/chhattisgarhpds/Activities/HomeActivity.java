@@ -51,8 +51,8 @@ public class HomeActivity extends AppCompatActivity {
         context = HomeActivity.this;
 
         txnType = getIntent().getStringExtra("txnType");
-
         pd = new ProgressDialog(context);
+
         logout = findViewById(R.id.logout);
         issue = findViewById(R.id.issue);
         inspection = findViewById(R.id.inspection);
@@ -60,8 +60,14 @@ public class HomeActivity extends AppCompatActivity {
         receive = findViewById(R.id.receive_goods);
         reports = findViewById(R.id.reports);
         others = findViewById(R.id.others);
-
         rd = findViewById(R.id.rd);
+        if(!txnType.equals("O")){
+
+            inspection.setEnabled(false);
+            aadhar.setEnabled(false);
+            receive.setEnabled(false);
+
+        }
 
 
         boolean  rd_fps;

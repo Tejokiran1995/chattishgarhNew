@@ -604,7 +604,6 @@ public class RationDetailsActivity extends AppCompatActivity {
                     p.putExtra("key", "");
                     p.putExtra("txnType", txnType);
                     p.putExtra("rationCardNo", rationCardNo);
-                    p.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(p);
                     finish();
                 }
@@ -631,8 +630,8 @@ public class RationDetailsActivity extends AppCompatActivity {
         p.putExtra("key", xmlformat);
         p.putExtra("txnType", txnType);
         p.putExtra("rationCardNo", rationCardNo);
-        p.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(p);
+        finish();
     }
 
     public interface OnClickListener {

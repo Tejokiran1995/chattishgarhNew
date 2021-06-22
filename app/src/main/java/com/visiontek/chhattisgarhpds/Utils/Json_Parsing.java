@@ -76,8 +76,12 @@ public class Json_Parsing {
             url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/getFpsOfflineData";
         }else if (type==6){
             url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/getCbUpdate";
-        }else {
+        }else if(type == 7){
             url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/getFpsStockDetails";
+        }
+        else
+        {
+            url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/pushFpsOfflineData";
         }
        /* if (type==17 || type==18){
 
@@ -298,6 +302,10 @@ public class Json_Parsing {
                         e.printStackTrace();
                     }
                 }
+                else if(type == 8)
+                {
+                    parseOfflineUploadResult(myResponse,context);
+                }
             }
 
         });
@@ -449,6 +457,51 @@ public class Json_Parsing {
     }
     public interface OnResultListener {
         void onCompleted(String code, String msg, Object object) throws SQLException;
+    }
+
+    public void parseOfflineUploadResult(String strJson, Context context)
+    {
+        SQLiteDatabase db = null;
+        try {
+            JSONObject jsonRootObject = new JSONObject(strJson);
+            msg = jsonRootObject.getString("respMessage");
+            code = jsonRootObject.getString("respCode");
+
+            if(code.equals("00"))
+            {
+                db = databaseHelper.getWritableDatabase();
+
+                JSONArray jsonArray1 = jsonRootObject.optJSONArray("updatedReceipts");
+                for(int i=0; i < jsonArray1.length(); i++) {
+                    JSONObject jsonObject = jsonArray1.getJSONObject(i);
+                    String receiptId = jsonObject.optString("receiptId").toString();
+                    String rcId = jsonObject.optString("rcId").toString();
+                    String commCode = jsonObject.optString("commCode").toString();
+
+                    String query = String.format("update BenfiaryTxn set TxnUploadSts = 'Y' where RecptId='%s' and RcId='%s' and CommCode='%s'",receiptId,rcId,commCode);
+                    System.out.println("Query: " +query);
+                    db.execSQL(query);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(db != null && db.isOpen())
+                db.close();
+        }
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    callback();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
     }
     public void parsegetCbUpdate(String strJson, Context context) throws Exception {
 

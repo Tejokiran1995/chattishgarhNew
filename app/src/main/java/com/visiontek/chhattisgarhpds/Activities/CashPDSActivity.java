@@ -73,7 +73,7 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
     RadioGroup radioGroup;
     Context context;
     EditText id;
-    Button home, last, get_details;
+    Button home,last,get_details;
     RadioButton radiorc, radioaadhaar;
     ProgressDialog pd = null;
     TextView rd;
@@ -105,6 +105,10 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
         context = CashPDSActivity.this;
         txnType = getIntent().getStringExtra("txnType");
         pd = new ProgressDialog(context);
+        radioaadhaar = findViewById(R.id.radio_aadhaar);
+        if(!txnType.equals("O")){
+            radioaadhaar.setEnabled(false);
+        }
 
         id = findViewById(R.id.id);
         home = findViewById(R.id.cash_pds_home);

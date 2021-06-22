@@ -10,12 +10,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
@@ -35,9 +39,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.gson.Gson;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetURLDetails.fpsCommonInfoModel.fpsCommonInfo;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetURLDetails.stateBean;
 import com.visiontek.chhattisgarhpds.Models.PartialOnlineData;
+import com.visiontek.chhattisgarhpds.Models.UploadingModels.CommWiseData;
+import com.visiontek.chhattisgarhpds.Models.UploadingModels.UploadDataModel;
 import com.visiontek.chhattisgarhpds.R;
 import com.visiontek.chhattisgarhpds.Utils.DatabaseHelper;
 import com.visiontek.chhattisgarhpds.Utils.Json_Parsing;
@@ -45,10 +52,23 @@ import com.visiontek.chhattisgarhpds.Utils.TelephonyInfo;
 import com.visiontek.chhattisgarhpds.Utils.Util;
 import com.visiontek.chhattisgarhpds.Utils.XML_Parsing;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 import static com.visiontek.chhattisgarhpds.Models.AppConstants.DEVICEID;
 import static com.visiontek.chhattisgarhpds.Models.AppConstants.OFFLINE_TOKEN;
 import static com.visiontek.chhattisgarhpds.Models.AppConstants.dealerConstants;
@@ -74,6 +94,7 @@ public class StartActivity extends AppCompatActivity {
     String longitude;
     String latitude;
     DatabaseHelper db;
+    Handler mHandler;
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +103,8 @@ public class StartActivity extends AppCompatActivity {
         db = new DatabaseHelper(context);
         checkLanguage();
         setContentView(R.layout.activity_start);
+
+        mHandler = new Handler(context.getMainLooper());
 
         TextView rd = findViewById(R.id.rd);
         start = findViewById(R.id.button_start);
@@ -109,7 +132,7 @@ public class StartActivity extends AppCompatActivity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (false && Util.networkConnected(context)) {
+                if (Util.networkConnected(context)) {
                     if (mp!=null) {
                         releaseMediaPlayer(context,mp);
                     }
@@ -185,7 +208,13 @@ public class StartActivity extends AppCompatActivity {
                     }
                         proceedinOffline(txnType,enteredPassword);
 
+                }else{
+
+                    show_error_box(context.getResources().getString(R.string.Please_Enter_a_valid_Password), context.getResources().getString(R.string.Invalid_Password));
+
+
                 }
+
             }
         });
         alert.setNegativeButton(context.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
@@ -218,6 +247,7 @@ public class StartActivity extends AppCompatActivity {
             setLocal(L);
         }
     }
+
 
     private void FramexmlforDealerDetails() {
         String dealers = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
@@ -288,15 +318,8 @@ public class StartActivity extends AppCompatActivity {
                         if (Util.networkConnected(context)) {
 
                             /*Here You need to Push all Device Data to Server ==>  */
+                            new UploadPendingRecords(fpsCommonInfoData.fpsSessionId,fpsCommonInfoData.fpsId,"").execute();
 
-                            String keyregister = "{\n" +
-                                    "\"fpsId\" : " + "\"" + fpsCommonInfoData.fpsId + "\"" + ",\n" +
-                                    "\"sessionId\" : " + "\"" + fpsCommonInfoData.fpsSessionId + "\"" + ",\n" +
-                                    "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
-                                    "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
-                                    "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
-                                    "}";
-                            keyregisterurl(keyregister);
                         } else {
 
                             show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection));
@@ -681,5 +704,57 @@ public class StartActivity extends AppCompatActivity {
             System.out.println("*********Status Changed");
         }
     }
+
+    public class UploadPendingRecords extends AsyncTask<Void,Void,Integer>
+    {
+        String fpsSessionId,fpsId,terminalId;
+
+        public UploadPendingRecords(String fpsSessionId, String fpsId, String terminalId) {
+            this.fpsSessionId = fpsSessionId;
+            this.fpsId = fpsId;
+            this.terminalId = terminalId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd.setMessage("Uploading Offline Records...");
+            mHandler.post(new Runnable() {
+                public void run() {
+                    pd.show();
+                }
+            });
+        }
+
+        @Override
+        protected void onPostExecute(Integer ret) {
+            super.onPostExecute(ret);
+            if(pd.isShowing())
+                pd.dismiss();
+            if(ret == 0)
+            {
+                String keyregister = "{\n" +
+                        "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
+                        "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
+                        "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
+                        "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
+                        "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
+                        "}";
+                keyregisterurl(keyregister);
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected Integer doInBackground(Void... data) {
+            return 0;
+        }
+    }
+
+
 
 }

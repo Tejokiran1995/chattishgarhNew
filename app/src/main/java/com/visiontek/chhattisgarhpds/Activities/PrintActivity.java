@@ -148,7 +148,6 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
     public void proceedForOfflineTransaction(boolean isOnlineTransaction,Print printData )
     {
         int isOfflineOk = databaseHelper.txnAllotedBetweenTime();
-        isOfflineOk = 0;
         if(isOfflineOk == 0)
         {
             Date now = new Date();

@@ -76,6 +76,8 @@ dependencies {
     implementation files('libs/mTerminal100.aar')
 
 
+    implementation 'com.google.code.gson:gson:2.8.6'
+
 //    implementation "androidx.room:room-runtime:$room_version"
 //    annotationProcessor "androidx.room:room-compiler:$room_version"
 

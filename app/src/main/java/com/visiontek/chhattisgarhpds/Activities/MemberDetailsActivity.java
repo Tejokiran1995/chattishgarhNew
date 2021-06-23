@@ -36,6 +36,7 @@ import com.visiontek.chhattisgarhpds.Models.DATAModels.DataModel;
 import com.visiontek.chhattisgarhpds.Models.IssueModel.MemberDetailsModel.Ekyc;
 import com.visiontek.chhattisgarhpds.Models.IssueModel.MemberDetailsModel.GetUserDetails.MemberModel;
 import com.visiontek.chhattisgarhpds.R;
+import com.visiontek.chhattisgarhpds.Utils.DatabaseHelper;
 import com.visiontek.chhattisgarhpds.Utils.Json_Parsing;
 import com.visiontek.chhattisgarhpds.Utils.Util;
 import com.visiontek.chhattisgarhpds.Utils.XML_Parsing;
@@ -83,6 +84,8 @@ public class MemberDetailsActivity extends AppCompatActivity {
 
     TextView rd;
     Context context;
+    int offlineEligibleFlag ;
+    DatabaseHelper databaseHelper;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -97,6 +100,8 @@ public class MemberDetailsActivity extends AppCompatActivity {
         checkBox = findViewById(R.id.mcheck);
         txnType = getIntent().getStringExtra("txnType");
 
+        databaseHelper = new DatabaseHelper(this);
+        offlineEligibleFlag = databaseHelper.checkForOfflineDistribution();
 
         rd = findViewById(R.id.rd);
 
@@ -153,7 +158,11 @@ public class MemberDetailsActivity extends AppCompatActivity {
                             ConsentformURL(consentrequest);
                         }
                     } else {
-                        show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection),0);
+                        if (offlineEligibleFlag == 0) {
+                            proceedInPartialOffline();
+                        }
+                        else
+                            show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection),0);
                     }
                 } else {
                     if (mp!=null) {
@@ -377,7 +386,11 @@ public class MemberDetailsActivity extends AppCompatActivity {
         if (networkConnected(context)) {
             hitManual(manual);
         } else {
-            show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection),0);
+            if (offlineEligibleFlag == 0) {
+                proceedInPartialOffline();
+            }
+            else
+                show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection),0);
         }
     }
 
@@ -575,7 +588,11 @@ public class MemberDetailsActivity extends AppCompatActivity {
         if (networkConnected(context)) {
             hiteKyc(memeKyc);
         } else {
-            show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection),0);
+            if (offlineEligibleFlag == 0) {
+                proceedInPartialOffline();
+            }
+            else
+                show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection),0);
         }
 
     }
@@ -886,5 +903,15 @@ public class MemberDetailsActivity extends AppCompatActivity {
 
     public interface OnClickListener {
         void onClick_d(int p);
+    }
+
+    public void proceedInPartialOffline()
+    {
+        Intent ration = new Intent(context, RationDetailsActivity.class);
+        ration.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        ration.putExtra("txnType","P");
+        ration.putExtra("rationCardNo",memberConstants.carddetails.rcId);
+        startActivity(ration);
+        finish();
     }
 }

@@ -97,6 +97,7 @@ public class RationDetailsActivity extends AppCompatActivity {
     public static double TOTALAMOUNT;
     String txnType,rationCardNo;
     DatabaseHelper databaseHelper;
+    int offlineEligibleFlag ;
 
 
     public String
@@ -123,6 +124,7 @@ public class RationDetailsActivity extends AppCompatActivity {
         Ref = getIntent().getStringExtra("REF");
         txnType = getIntent().getStringExtra("txnType");
         rationCardNo = getIntent().getStringExtra("rationCardNo");
+        offlineEligibleFlag = databaseHelper.checkForOfflineDistribution();
 
         boolean rd_fps;
         rd_fps = RDservice(context);
@@ -474,7 +476,6 @@ public class RationDetailsActivity extends AppCompatActivity {
         TOTALAMOUNT = 0.0;
         StringBuilder add = new StringBuilder();
         String str;
-        int offlineEleFlag = databaseHelper.checkForOfflineDistribution();
         databaseHelper.clearPrintData(context);
         int userCommModelssize = memberConstants.commDetails.size();
         float commprice,commqty,commamount;
@@ -504,7 +505,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                             "<price>" + memberConstants.commDetails.get(i).totalPrice + "</price>\n" +
                             "</commodityDetail>\n";
                     add.append(str);
-                    if(offlineEleFlag == 0)
+                    if(offlineEligibleFlag == 0)
                     {
                         double requiredQty = Double.parseDouble(memberConstants.commDetails.get(i).requiredQty);
                         double price = Double.parseDouble(memberConstants.commDetails.get(i).price);
@@ -541,7 +542,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                 }
             }
 
-            if(offlineEleFlag == 0)
+            if(offlineEligibleFlag == 0)
             {
                 int balanceNotAvailableItemCount = databaseHelper.checkBalanceEntitlement(context,rationCardNo);
                 if(balanceNotAvailableItemCount != 0)
@@ -598,8 +599,10 @@ public class RationDetailsActivity extends AppCompatActivity {
                 Util.generateNoteOnSD(context, "RationReq.txt", ration);
                 hitURL(ration);
             } else {
-                if(txnType.equals("P")||txnType.equals("Q"))
+                if(offlineEligibleFlag == 0)
                 {
+                    if(txnType.equals("O"))
+                        txnType = "P";
                     Intent p = new Intent(getApplicationContext(), PrintActivity.class);
                     p.putExtra("key", "");
                     p.putExtra("txnType", txnType);

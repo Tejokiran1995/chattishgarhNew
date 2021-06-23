@@ -508,19 +508,11 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 if (!isError.equals("00")) {
                     show_error_box(msg, context.getResources().getString(R.string.MenuList) + isError, 0);
                 } else {
-                    fpsCommonInfo fpsCommonInfoData = dealerConstants.fpsCommonInfo;
-                    if(fpsCommonInfoData.partialOnlineOfflineStatus.equals("Y"))
-                    {
-
-                    }
-                    else
-                    {
-                        Intent home = new Intent(context, HomeActivity.class);
-                        home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        home.putExtra("txnType","O");
-                        startActivity(home);
-                        finish();
-                    }
+                    Intent home = new Intent(context, HomeActivity.class);
+                    home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    home.putExtra("txnType","O");
+                    startActivity(home);
+                    finish();
                 }
             }
         });
@@ -938,21 +930,45 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 if (!code.equals("00")) {
                     show_error_box(msg, code );
                 } else {
-                    fpsCommonInfo fpsCommonInfoData = dealerConstants.fpsCommonInfo;
-                    String[] monthyear= databaseHelper.getMonthYear(context);
-                    System.out.println("@@Month and Year: " +monthyear[0]);
-                    String CB="{\n" +
-                            "\"fpsId\" : "+"\""+fpsCommonInfoData.fpsId+"\""+",\n" +
-                            "\"sessionId\" : "+"\""+fpsCommonInfoData.fpsSessionId+"\""+",\n" +
-                            "\"terminalId\" : "+"\""+DEVICEID+"\""+",\n" +
-                            "\"token\" : "+"\""+OFFLINE_TOKEN+"\""+",\n" +
-                            "\"stateCode\" : "+"\""+"22"+"\""+",\n" +
-                            "\"allocationMonth\" : "+"\""+monthyear[0]+"\""+",\n" +
-                            "\"allocationYear\"  : "+"\""+monthyear[1]+"\""+"\n" +
-                            "}";
+                    if(dealerConstants.fpsURLInfo.fpsCbDownloadStatus.equals("Y"))
+                    {
+                        fpsCommonInfo fpsCommonInfoData = dealerConstants.fpsCommonInfo;
+                        String[] monthyear= databaseHelper.getMonthYear(context);
+                        System.out.println("@@Month and Year: " +monthyear[0]);
+                        String CB="{\n" +
+                                "\"fpsId\" : "+"\""+fpsCommonInfoData.fpsId+"\""+",\n" +
+                                "\"sessionId\" : "+"\""+fpsCommonInfoData.fpsSessionId+"\""+",\n" +
+                                "\"terminalId\" : "+"\""+DEVICEID+"\""+",\n" +
+                                "\"token\" : "+"\""+OFFLINE_TOKEN+"\""+",\n" +
+                                "\"stateCode\" : "+"\""+"22"+"\""+",\n" +
+                                "\"allocationMonth\" : "+"\""+monthyear[0]+"\""+",\n" +
+                                "\"allocationYear\"  : "+"\""+monthyear[1]+"\""+"\n" +
+                                "}";
 
-                    System.out.println("@@ Going to CBDownload");
-                    CBDownload(CB);
+                        System.out.println("@@ Going to CBDownload");
+                        CBDownload(CB);
+                    }
+                    else
+                    {
+                        String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
+                                "<SOAP-ENV:Envelope\n" +
+                                "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
+                                "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +
+                                "    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                                "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                                "    xmlns:ns1=\"http://service.fetch.rationcard/\">\n" +
+                                "    <SOAP-ENV:Body>\n" +
+                                "        <ns1:menuDisplayService>\n" +
+                                "            <shop_number>" + dealerConstants.stateBean.statefpsId + "</shop_number>\n" +
+                                "            <fpsSessionId>" + dealerConstants.fpsCommonInfo.fpsSessionId + "</fpsSessionId>\n" +
+                                "            <stateCode>" + dealerConstants.stateBean.stateCode + "</stateCode>\n" +
+                                "        </ns1:menuDisplayService>\n" +
+                                "    </SOAP-ENV:Body>\n" +
+                                "</SOAP-ENV:Envelope>";
+                        Util.generateNoteOnSD(context, "MenuReq.txt", menu);
+                        hitURLMENU(menu);
+                    }
+
                 }
             }
 
@@ -973,7 +989,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 if (!code.equals("00")) {
                     show_error_box(msg, code );
                 } else {
-                                            String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
+                    String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
                                 "<SOAP-ENV:Envelope\n" +
                                 "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
                                 "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +

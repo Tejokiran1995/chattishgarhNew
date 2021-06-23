@@ -218,7 +218,7 @@ public class OfflineUploadNDownload {
         if(partialDataDownloadFlag.equals("Y"))
             uploadDataModel.setFullDataUploadedStatus("Y");
         else
-            uploadDataModel.setFullDataUploadedStatus("Y");
+            uploadDataModel.setFullDataUploadedStatus("N");
 
         String finalPayload = gson.toJson(uploadDataModel);
 

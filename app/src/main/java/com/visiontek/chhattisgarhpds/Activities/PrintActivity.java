@@ -75,6 +75,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
     TextView total;
     String txnType,rationCardNo;
     DatabaseHelper databaseHelper;
+    int offlineEligibleFlag ;
 
 
     private final ExecutorService es = Executors.newScheduledThreadPool(30);
@@ -102,6 +103,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
         ACTION_USB_PERMISSION = mActivity.getApplicationInfo().packageName;
 
         databaseHelper = new DatabaseHelper(context);
+        offlineEligibleFlag = databaseHelper.checkForOfflineDistribution();
 
         txnType = getIntent().getStringExtra("txnType");
         rationCardNo = getIntent().getStringExtra("rationCardNo");
@@ -123,13 +125,19 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
+                if (Util.batterylevel(context)|| Util.adapter(context)) {
+                }else {
+                    show_error_box(context.getResources().getString(R.string.Battery_Msg),context.getResources().getString(R.string.Battery),1);
+                    return;
+                }
                 if (txnType.equals("O") && Util.networkConnected(context)) {
                     Util.generateNoteOnSD(context, "RationReq.txt", ration);
                     hitURL(ration);
                 } else {
+                    if(txnType.equals("O"))
+                        txnType = "P";
                     proceedForOfflineTransaction(false,new Print());
                 }
-
             }
         });
 
@@ -159,7 +167,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                 dealerConstants = new Dealer();
                 dealerConstants.stateBean.statefpsId = partialOnlineData.getOffPassword();
                 DateFormat dateFormat = new SimpleDateFormat("hhmmss");
-                DateFormat orderdateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                DateFormat orderdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
                 Calendar calendar = Calendar.getInstance();
                 int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);

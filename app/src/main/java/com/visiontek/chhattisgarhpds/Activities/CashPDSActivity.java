@@ -79,6 +79,8 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
     TextView rd;
     String txnType;
     DatabaseHelper databaseHelper;
+    int offlineEligibleFlag ;
+
 
     private CashPDSActivity mActivity;
     private final ExecutorService es = Executors.newScheduledThreadPool(30);
@@ -117,6 +119,7 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
 
         radioGroup = findViewById(R.id.groupradio);
         databaseHelper = new DatabaseHelper(this);
+        offlineEligibleFlag = databaseHelper.checkForOfflineDistribution();
 
         mActivity = this;
         ACTION_USB_PERMISSION = mActivity.getApplicationInfo().packageName;
@@ -142,9 +145,10 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
                     if (txnType.equals("O") && Util.networkConnected(context))
                         member_details();
                     else {
-                        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-                        int offlineEligibleFlag = databaseHelper.checkForOfflineDistribution();
-                        if (!txnType.equals("O") || offlineEligibleFlag == 0) {
+
+                        if (select == 1 && offlineEligibleFlag == 0) {
+                            if(txnType.equals("O"))
+                                txnType = "P";
                             tryInOfflineMode(Cash_ID);
                         }
                         else
@@ -438,7 +442,13 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
         if (networkConnected(context)) {
             hitURL(members);
         } else {
-            show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection));
+            if (select == 1 && offlineEligibleFlag == 0) {
+                if(txnType.equals("O"))
+                    txnType = "P";
+                tryInOfflineMode(Cash_ID);
+            }
+            else
+                show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection));
         }
     }
 

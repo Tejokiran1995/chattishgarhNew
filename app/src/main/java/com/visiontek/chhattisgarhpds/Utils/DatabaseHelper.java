@@ -2097,6 +2097,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             res.moveToFirst();
             while (!res.isAfterLast())
             {
+                String txnTime = res.getString(11);//DateFormat orderdateFormat = new SimpleDateFormat("");
+                DateFormat fromFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                DateFormat toFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+                Date date = fromFormat.parse(txnTime);
                 CommWiseData commWiseData = new CommWiseData();
                 commWiseData.setRcId(res.getString(0));
                 commWiseData.setCommCode(res.getString(1));
@@ -2109,7 +2113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 commWiseData.setTotalAmount(res.getString(8));
                 commWiseData.setCommPrice(res.getString(9));
                 commWiseData.setHeadOfTheFamily(res.getString(10));
-                commWiseData.setTransactionTime(res.getString(11));
+                commWiseData.setTransactionTime(toFormat.format(date));
                 commWiseData.setTransMode(res.getString(12));
                 commWiseData.setAllotedMonth(res.getString(13));
                 commWiseData.setAllotedYear(res.getString(14));

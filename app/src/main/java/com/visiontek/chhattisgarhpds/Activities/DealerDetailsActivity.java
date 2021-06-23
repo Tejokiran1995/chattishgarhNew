@@ -12,8 +12,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
@@ -33,11 +35,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.visiontek.chhattisgarhpds.Adapters.CustomAdapter;
 import com.visiontek.chhattisgarhpds.Models.DATAModels.DataModel;
+import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetURLDetails.fpsCommonInfoModel.fpsCommonInfo;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetUserDetails.DealerModel;
 import com.visiontek.chhattisgarhpds.Models.PartialOnlineData;
 import com.visiontek.chhattisgarhpds.R;
 import com.visiontek.chhattisgarhpds.Utils.DatabaseHelper;
 import com.visiontek.chhattisgarhpds.Utils.Json_Parsing;
+import com.visiontek.chhattisgarhpds.Utils.OfflineUploadNDownload;
 import com.visiontek.chhattisgarhpds.Utils.Util;
 import com.visiontek.chhattisgarhpds.Utils.XML_Parsing;
 
@@ -58,6 +62,7 @@ import static com.visiontek.chhattisgarhpds.Activities.StartActivity.L;
 import static com.visiontek.chhattisgarhpds.Activities.StartActivity.mp;
 import static com.visiontek.chhattisgarhpds.Models.AppConstants.DEVICEID;
 
+import static com.visiontek.chhattisgarhpds.Models.AppConstants.OFFLINE_TOKEN;
 import static com.visiontek.chhattisgarhpds.Models.AppConstants.dealerConstants;
 import static com.visiontek.chhattisgarhpds.Utils.Util.ConsentForm;
 import static com.visiontek.chhattisgarhpds.Utils.Util.RDservice;
@@ -76,12 +81,14 @@ public class DealerDetailsActivity extends AppCompatActivity {
     DatabaseHelper databaseHelper;
     String txntype;
     RecyclerView recyclerView;
+    Handler mHandler;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dealer__details);
         context = DealerDetailsActivity.this;
+        mHandler = new Handler(context.getMainLooper());
         txntype = getIntent().getStringExtra("txnType");
         pd = new ProgressDialog(context);
         scanfp = findViewById(R.id.dealer_scanFP);
@@ -140,7 +147,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                             PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
                             if(partialOnlineData != null && partialOnlineData.getOfflineLogin() != null && partialOnlineData.getOfflineLogin().equals("Y"))
                             {
-                                password_Dialog(txntype);
+                                password_Dialog("Q");
                             }
                             else
                                 show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection), 0);
@@ -439,7 +446,10 @@ public class DealerDetailsActivity extends AppCompatActivity {
                             hitURLfusion(fusion);
                         }
 
-                        String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
+                        if(dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus.equals("Y"))
+                            new UploadPendingRecords(dealerConstants.fpsCommonInfo.fpsSessionId,dealerConstants.stateBean.statefpsId,"",dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus).execute();
+                        else{
+                                                    String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
                                 "<SOAP-ENV:Envelope\n" +
                                 "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
                                 "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +
@@ -456,6 +466,9 @@ public class DealerDetailsActivity extends AppCompatActivity {
                                 "</SOAP-ENV:Envelope>";
                         Util.generateNoteOnSD(context, "MenuReq.txt", menu);
                         hitURLMENU(menu);
+                        }
+
+
                     }
                 }
             }
@@ -495,11 +508,19 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 if (!isError.equals("00")) {
                     show_error_box(msg, context.getResources().getString(R.string.MenuList) + isError, 0);
                 } else {
-                    Intent home = new Intent(context, HomeActivity.class);
-                    home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    home.putExtra("txnType","O");
-                    startActivity(home);
-                    finish();
+                    fpsCommonInfo fpsCommonInfoData = dealerConstants.fpsCommonInfo;
+                    if(fpsCommonInfoData.partialOnlineOfflineStatus.equals("Y"))
+                    {
+
+                    }
+                    else
+                    {
+                        Intent home = new Intent(context, HomeActivity.class);
+                        home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        home.putExtra("txnType","O");
+                        startActivity(home);
+                        finish();
+                    }
                 }
             }
         });
@@ -803,5 +824,192 @@ public class DealerDetailsActivity extends AppCompatActivity {
     public interface OnClickListener {
         void onClick_d(int p);
     }
+
+    public class UploadPendingRecords extends AsyncTask<Void,Void,Integer>
+    {
+        String fpsSessionId,fpsId,terminalId,partialDataDownloadFlag,errorMessage;
+        OfflineUploadNDownload offlineUploadNDownload;
+
+        public UploadPendingRecords(String fpsSessionId, String fpsId, String terminalId,String partialDataDownloadFlag) {
+            this.fpsSessionId = fpsSessionId;
+            this.fpsId = fpsId;
+            this.terminalId = terminalId;
+            this.partialDataDownloadFlag = partialDataDownloadFlag;
+            offlineUploadNDownload = new OfflineUploadNDownload(context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showMessage("Uploading Offline Records...");
+        }
+
+        public void showMessage(String message)
+        {
+            pd.setMessage(message);
+            mHandler.post(new Runnable() {
+                public void run() {
+                    pd.show();
+                }
+            });
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer ret) {
+            super.onPostExecute(ret);
+            if(pd.isShowing())
+                pd.dismiss();
+            if(ret == 0)
+            {
+                String keyregister = "{\n" +
+                        "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
+                        "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
+                        "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
+                        "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
+                        "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
+                        "}";
+                keyregisterurl(keyregister);
+            }
+            else
+            {
+                showAlert("Uploading Error",errorMessage);
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected Integer doInBackground(Void... data) {
+            int pendingTxns = databaseHelper.getPendingTxnCount();
+            if(pendingTxns > 0)
+            {
+                showMessage("Uploading Pending Records \n Please wait...");
+                int ret = offlineUploadNDownload.ManualServerUploadPartialTxns(fpsId,fpsSessionId);
+                if(ret == -2)
+                {
+                    //No Internet
+                    errorMessage = "Internet not available";
+                    return ret;
+                }
+                ret = offlineUploadNDownload.updateTransStatus(fpsId,fpsSessionId,partialDataDownloadFlag);
+                if(ret == 0)
+                {
+                    errorMessage = "All Offline txn records were Uploaded to server";
+                }
+                else
+                    errorMessage = "Pending txn records are exists,Please try again";
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    public void showAlert(String title, String message) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this);
+        alert.setTitle(title);
+        alert.setMessage(message);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert.show();
+    }
+
+    private void keyregisterurl(String keyregister) {
+        System.out.println("@@Executing: " +keyregister);
+        pd = ProgressDialog.show(context, context.getResources().getString(R.string.Beneficiary_Details), context.getResources().getString(R.string.Consent_Form), true, false);
+        Json_Parsing request = new Json_Parsing(context, keyregister, 5);
+        request.setOnResultListener(new Json_Parsing.OnResultListener() {
+
+            @Override
+            public void onCompleted(String code, String msg,Object object) throws SQLException {
+                if (pd.isShowing()) {
+                    pd.dismiss();
+                }
+                if (!code.equals("00")) {
+                    show_error_box(msg, code );
+                } else {
+                    fpsCommonInfo fpsCommonInfoData = dealerConstants.fpsCommonInfo;
+                    String[] monthyear= databaseHelper.getMonthYear(context);
+                    System.out.println("@@Month and Year: " +monthyear[0]);
+                    String CB="{\n" +
+                            "\"fpsId\" : "+"\""+fpsCommonInfoData.fpsId+"\""+",\n" +
+                            "\"sessionId\" : "+"\""+fpsCommonInfoData.fpsSessionId+"\""+",\n" +
+                            "\"terminalId\" : "+"\""+DEVICEID+"\""+",\n" +
+                            "\"token\" : "+"\""+OFFLINE_TOKEN+"\""+",\n" +
+                            "\"stateCode\" : "+"\""+"22"+"\""+",\n" +
+                            "\"allocationMonth\" : "+"\""+monthyear[0]+"\""+",\n" +
+                            "\"allocationYear\"  : "+"\""+monthyear[1]+"\""+"\n" +
+                            "}";
+
+                    System.out.println("@@ Going to CBDownload");
+                    CBDownload(CB);
+                }
+            }
+
+        });
+    }
+
+    private void CBDownload(String keyregister) {
+        System.out.println("@@ In CBDownload");
+        pd = ProgressDialog.show(context, context.getResources().getString(R.string.Beneficiary_Details), context.getResources().getString(R.string.Consent_Form), true, false);
+        Json_Parsing request = new Json_Parsing(context, keyregister, 6);
+        request.setOnResultListener(new Json_Parsing.OnResultListener() {
+
+            @Override
+            public void onCompleted(String code, String msg, Object object) throws SQLException {
+                if (pd.isShowing()) {
+                    pd.dismiss();
+                }
+                if (!code.equals("00")) {
+                    show_error_box(msg, code );
+                } else {
+                                            String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
+                                "<SOAP-ENV:Envelope\n" +
+                                "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
+                                "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +
+                                "    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                                "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                                "    xmlns:ns1=\"http://service.fetch.rationcard/\">\n" +
+                                "    <SOAP-ENV:Body>\n" +
+                                "        <ns1:menuDisplayService>\n" +
+                                "            <shop_number>" + dealerConstants.stateBean.statefpsId + "</shop_number>\n" +
+                                "            <fpsSessionId>" + dealerConstants.fpsCommonInfo.fpsSessionId + "</fpsSessionId>\n" +
+                                "            <stateCode>" + dealerConstants.stateBean.stateCode + "</stateCode>\n" +
+                                "        </ns1:menuDisplayService>\n" +
+                                "    </SOAP-ENV:Body>\n" +
+                                "</SOAP-ENV:Envelope>";
+                        Util.generateNoteOnSD(context, "MenuReq.txt", menu);
+                        hitURLMENU(menu);
+                }
+            }
+
+        });
+    }
+
+    private void show_error_box(String msg, String title) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(msg);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 }
 

@@ -218,6 +218,7 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
                         }
                         else
                             show_error_box("Rc Number","Card not available");
+
                     }
                 });
 

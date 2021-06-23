@@ -105,8 +105,6 @@ public class StartActivity extends AppCompatActivity {
         checkLanguage();
         setContentView(R.layout.activity_start);
 
-        mHandler = new Handler(context.getMainLooper());
-
         TextView rd = findViewById(R.id.rd);
         start = findViewById(R.id.button_start);
         quit = findViewById(R.id.button_quit);
@@ -319,7 +317,12 @@ public class StartActivity extends AppCompatActivity {
                         if (Util.networkConnected(context)) {
 
                             /*Here You need to Push all Device Data to Server ==>  */
-                            new UploadPendingRecords(fpsCommonInfoData.fpsSessionId,fpsCommonInfoData.fpsId,"",fpsCommonInfoData.partialOnlineOfflineStatus).execute();
+
+                            Intent i = new Intent(StartActivity.this, DealerDetailsActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.putExtra("txnType","O");
+                            startActivity(i);
+
 
                         } else {
 
@@ -706,103 +709,9 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    public class UploadPendingRecords extends AsyncTask<Void,Void,Integer>
-    {
-        String fpsSessionId,fpsId,terminalId,partialDataDownloadFlag,errorMessage;
-        OfflineUploadNDownload offlineUploadNDownload;
 
-        public UploadPendingRecords(String fpsSessionId, String fpsId, String terminalId,String partialDataDownloadFlag) {
-            this.fpsSessionId = fpsSessionId;
-            this.fpsId = fpsId;
-            this.terminalId = terminalId;
-            this.partialDataDownloadFlag = partialDataDownloadFlag;
-            offlineUploadNDownload = new OfflineUploadNDownload(context);
-        }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showMessage("Uploading Offline Records...");
-        }
 
-        public void showMessage(String message)
-        {
-            pd.setMessage(message);
-            mHandler.post(new Runnable() {
-                public void run() {
-                    pd.show();
-                }
-            });
-        }
-
-        @Override
-        protected void onPostExecute(Integer ret) {
-            super.onPostExecute(ret);
-            if(pd.isShowing())
-                pd.dismiss();
-            if(ret == 0)
-            {
-                String keyregister = "{\n" +
-                        "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
-                        "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
-                        "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
-                        "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
-                        "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
-                        "}";
-                keyregisterurl(keyregister);
-            }
-            else
-            {
-                showAlert("Uploading Error",errorMessage);
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Integer doInBackground(Void... data) {
-            int pendingTxns = db.getPendingTxnCount();
-            if(pendingTxns > 0)
-            {
-                showMessage("Uploading Pending Records \n Please wait...");
-                int ret = offlineUploadNDownload.ManualServerUploadPartialTxns(fpsId,fpsSessionId);
-                if(ret == -2)
-                {
-                    //No Internet
-                    errorMessage = "Internet not available";
-                    return ret;
-                }
-                ret = offlineUploadNDownload.updateTransStatus(fpsId,fpsSessionId,partialDataDownloadFlag);
-                if(ret == 0)
-                {
-                    errorMessage = "All Offline txn records were Uploaded to server";
-                }
-                else
-                    errorMessage = "Pending txn records are exists,Please try again";
-                return -1;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
-
-    public void showAlert(String title, String message) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(StartActivity.this);
-        alert.setTitle(title);
-        alert.setMessage(message);
-        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        alert.show();
-    }
 
 
 

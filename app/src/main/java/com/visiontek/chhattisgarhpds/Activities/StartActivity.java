@@ -48,6 +48,7 @@ import com.visiontek.chhattisgarhpds.Models.UploadingModels.UploadDataModel;
 import com.visiontek.chhattisgarhpds.R;
 import com.visiontek.chhattisgarhpds.Utils.DatabaseHelper;
 import com.visiontek.chhattisgarhpds.Utils.Json_Parsing;
+import com.visiontek.chhattisgarhpds.Utils.OfflineUploadNDownload;
 import com.visiontek.chhattisgarhpds.Utils.TelephonyInfo;
 import com.visiontek.chhattisgarhpds.Utils.Util;
 import com.visiontek.chhattisgarhpds.Utils.XML_Parsing;
@@ -318,7 +319,7 @@ public class StartActivity extends AppCompatActivity {
                         if (Util.networkConnected(context)) {
 
                             /*Here You need to Push all Device Data to Server ==>  */
-                            new UploadPendingRecords(fpsCommonInfoData.fpsSessionId,fpsCommonInfoData.fpsId,"").execute();
+                            new UploadPendingRecords(fpsCommonInfoData.fpsSessionId,fpsCommonInfoData.fpsId,"",fpsCommonInfoData.partialOnlineOfflineStatus).execute();
 
                         } else {
 
@@ -707,18 +708,26 @@ public class StartActivity extends AppCompatActivity {
 
     public class UploadPendingRecords extends AsyncTask<Void,Void,Integer>
     {
-        String fpsSessionId,fpsId,terminalId;
+        String fpsSessionId,fpsId,terminalId,partialDataDownloadFlag,errorMessage;
+        OfflineUploadNDownload offlineUploadNDownload;
 
-        public UploadPendingRecords(String fpsSessionId, String fpsId, String terminalId) {
+        public UploadPendingRecords(String fpsSessionId, String fpsId, String terminalId,String partialDataDownloadFlag) {
             this.fpsSessionId = fpsSessionId;
             this.fpsId = fpsId;
             this.terminalId = terminalId;
+            this.partialDataDownloadFlag = partialDataDownloadFlag;
+            offlineUploadNDownload = new OfflineUploadNDownload(context);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setMessage("Uploading Offline Records...");
+            showMessage("Uploading Offline Records...");
+        }
+
+        public void showMessage(String message)
+        {
+            pd.setMessage(message);
             mHandler.post(new Runnable() {
                 public void run() {
                     pd.show();
@@ -742,6 +751,10 @@ public class StartActivity extends AppCompatActivity {
                         "}";
                 keyregisterurl(keyregister);
             }
+            else
+            {
+                showAlert("Uploading Error",errorMessage);
+            }
         }
 
         @Override
@@ -751,8 +764,44 @@ public class StartActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(Void... data) {
-            return 0;
+            int pendingTxns = db.getPendingTxnCount();
+            if(pendingTxns > 0)
+            {
+                showMessage("Uploading Pending Records \n Please wait...");
+                int ret = offlineUploadNDownload.ManualServerUploadPartialTxns(fpsId,fpsSessionId);
+                if(ret == -2)
+                {
+                    //No Internet
+                    errorMessage = "Internet not available";
+                    return ret;
+                }
+                ret = offlineUploadNDownload.updateTransStatus(fpsId,fpsSessionId,partialDataDownloadFlag);
+                if(ret == 0)
+                {
+                    errorMessage = "All Offline txn records were Uploaded to server";
+                }
+                else
+                    errorMessage = "Pending txn records are exists,Please try again";
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
         }
+    }
+
+    public void showAlert(String title, String message) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(StartActivity.this);
+        alert.setTitle(title);
+        alert.setMessage(message);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert.show();
     }
 
 

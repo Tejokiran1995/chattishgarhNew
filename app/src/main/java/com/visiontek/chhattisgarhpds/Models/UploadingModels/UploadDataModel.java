@@ -19,6 +19,10 @@ public class UploadDataModel {
     private  int pendingRecords;
     private  String distributionMonth;
     private  String distributionYear;
+    private  String keyregisterDataDeleteStatus;
+    private  String dataDownloadStatus;
+    private  String fullDataUploadedStatus;
+
 
     public String getFpsId() {
         return fpsId;
@@ -114,6 +118,30 @@ public class UploadDataModel {
 
     public void setDistributionYear(String distributionYear) {
         this.distributionYear = distributionYear;
+    }
+
+    public String getKeyregisterDataDeleteStatus() {
+        return keyregisterDataDeleteStatus;
+    }
+
+    public void setKeyregisterDataDeleteStatus(String keyregisterDataDeleteStatus) {
+        this.keyregisterDataDeleteStatus = keyregisterDataDeleteStatus;
+    }
+
+    public String getDataDownloadStatus() {
+        return dataDownloadStatus;
+    }
+
+    public void setDataDownloadStatus(String dataDownloadStatus) {
+        this.dataDownloadStatus = dataDownloadStatus;
+    }
+
+    public String getFullDataUploadedStatus() {
+        return fullDataUploadedStatus;
+    }
+
+    public void setFullDataUploadedStatus(String fullDataUploadedStatus) {
+        this.fullDataUploadedStatus = fullDataUploadedStatus;
     }
 }
 

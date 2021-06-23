@@ -2216,6 +2216,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public int getPendingTxnCount()
+    {
+        int count = 0;
+        String query = "select count(*) from BenfiaryTxn where TxnUploadSts ='N'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
+        {
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            if (!res.isAfterLast())
+            {
+                count = res.getInt(0);
+            }
+            res.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return count;
+        }
+    }
+
 }
 
 

@@ -1645,7 +1645,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         contentValues.put("RecptId",deviceTxnId);//Q How to generate?
                         contentValues.put("MemberName",excessData.getMemberName());//Q Not showing members in Offline ,then what shoud take?
                         contentValues.put("DateTime",orderDateTime);
-                        contentValues.put("TxnUploadSts","N");
+                        contentValues.put("TxnUploadSts",txnType.equals("O")?"Y":"N");
                         contentValues.put("TxnType",txnType);//O,Q,P
                         contentValues.put("AllotMonth",printBeanItem.getAllotedMonth());
                         contentValues.put("AllotYear",printBeanItem.getAllotedYear());
@@ -1733,6 +1733,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return -1;
             else if(partialOnlineData.getOfflineLogin().equals("Y"))
                 return 0;
+            else if(partialOnlineData.getOfflineLogin().equals("N")) return 1;
             else return -2;
     }
 
@@ -2098,9 +2099,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while (!res.isAfterLast())
             {
                 String txnTime = res.getString(11);//DateFormat orderdateFormat = new SimpleDateFormat("");
-                DateFormat fromFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                DateFormat toFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-                Date date = fromFormat.parse(txnTime);
                 CommWiseData commWiseData = new CommWiseData();
                 commWiseData.setRcId(res.getString(0));
                 commWiseData.setCommCode(res.getString(1));
@@ -2113,7 +2111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 commWiseData.setTotalAmount(res.getString(8));
                 commWiseData.setCommPrice(res.getString(9));
                 commWiseData.setHeadOfTheFamily(res.getString(10));
-                commWiseData.setTransactionTime(toFormat.format(date));
+                commWiseData.setTransactionTime(txnTime);
                 commWiseData.setTransMode(res.getString(12));
                 commWiseData.setAllotedMonth(res.getString(13));
                 commWiseData.setAllotedYear(res.getString(14));

@@ -599,7 +599,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                 Util.generateNoteOnSD(context, "RationReq.txt", ration);
                 hitURL(ration);
             } else {
-                if(offlineEligibleFlag == 0)
+                if(offlineEligibleFlag == 0)//error
                 {
                     if(txnType.equals("O"))
                         txnType = "P";

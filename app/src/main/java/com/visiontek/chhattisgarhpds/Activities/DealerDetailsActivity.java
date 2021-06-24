@@ -144,13 +144,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                             ConsentformURL(consentrequest);
                         }
                     } else {
-                            PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
-                            if(partialOnlineData != null && partialOnlineData.getOfflineLogin() != null && partialOnlineData.getOfflineLogin().equals("Y"))
-                            {
-                                password_Dialog("Q");
-                            }
-                            else
-                                show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection), 0);
+                        checkForOffline();
                     }
                 } else {
                     if (mp!=null) {
@@ -449,7 +443,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                         if(dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus.equals("Y"))
                             new UploadPendingRecords(dealerConstants.fpsCommonInfo.fpsSessionId,dealerConstants.stateBean.statefpsId,"",dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus).execute();
                         else{
-                                                    String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
+                             String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
                                 "<SOAP-ENV:Envelope\n" +
                                 "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
                                 "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +
@@ -508,6 +502,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 if (!isError.equals("00")) {
                     show_error_box(msg, context.getResources().getString(R.string.MenuList) + isError, 0);
                 } else {
+
                     Intent home = new Intent(context, HomeActivity.class);
                     home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     home.putExtra("txnType","O");
@@ -518,6 +513,37 @@ public class DealerDetailsActivity extends AppCompatActivity {
         });
         request.execute();
     }
+
+    public void gettingTxnsdetails(){
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this,
+                AlertDialog.THEME_HOLO_LIGHT);
+        alert.setTitle("");
+        alert.setMessage("PDS-P2.3.00 \n" +
+                "Total Txn Records : 13 \n " +
+                "Online Txn Records : 5 \n " +
+                "Offline Txn Records : 8 \n" +
+                "Uploaded Records : 8 \n" +
+                "Pending Records : 0 \n" +
+                "Alloted Month&Year : 6-2021 \n" +
+                "Date : 23-06-2021 T:10:58:02 \n" +
+                "Fps Id : 123456789141");
+        alert.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which){
+                        dialog.dismiss();
+                    }
+                });
+
+        alert.show();
+
+
+
+    }
+
+
 
     private void show_error_box(String msg, String title, final int i) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
@@ -659,7 +685,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
             Util.generateNoteOnSD(context, "DealerAuthReq.txt", dealerlogin);
             hitURLDealerAuthentication(dealerlogin);
         } else {
-            show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection),0);
+            checkForOffline();
         }
     }
 
@@ -828,12 +854,13 @@ public class DealerDetailsActivity extends AppCompatActivity {
             this.terminalId = terminalId;
             this.partialDataDownloadFlag = partialDataDownloadFlag;
             offlineUploadNDownload = new OfflineUploadNDownload(context);
+            errorMessage = "";
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            showMessage("Uploading Offline Records...");
+            showMessage("Uploading Pending Records \n Please wait...");
         }
 
         public void showMessage(String message)
@@ -854,14 +881,39 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 pd.dismiss();
             if(ret == 0)
             {
-                String keyregister = "{\n" +
-                        "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
-                        "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
-                        "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
-                        "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
-                        "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
-                        "}";
-                keyregisterurl(keyregister);
+                if(errorMessage.isEmpty())
+                {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this);
+                    alert.setTitle("Upload Result");
+                    alert.setMessage(errorMessage);
+                    alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            String keyregister = "{\n" +
+                                    "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
+                                    "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
+                                    "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
+                                    "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
+                                    "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
+                                    "}";
+                            keyregisterurl(keyregister);
+                        }
+                    });
+                    alert.show();
+                }
+                else
+                {
+                    String keyregister = "{\n" +
+                            "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
+                            "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
+                            "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
+                            "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
+                            "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
+                            "}";
+                    keyregisterurl(keyregister);
+                }
+
             }
             else
             {
@@ -879,11 +931,9 @@ public class DealerDetailsActivity extends AppCompatActivity {
             int pendingTxns = databaseHelper.getPendingTxnCount();
             if(pendingTxns > 0)
             {
-                showMessage("Uploading Pending Records \n Please wait...");
                 int ret = offlineUploadNDownload.ManualServerUploadPartialTxns(fpsId,fpsSessionId);
                 if(ret == -2)
                 {
-                    //No Internet
                     errorMessage = "Internet not available";
                     return ret;
                 }
@@ -894,7 +944,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 }
                 else
                     errorMessage = "Pending txn records are exists,Please try again";
-                return -1;
+                return ret;
             }
             else
             {
@@ -968,7 +1018,6 @@ public class DealerDetailsActivity extends AppCompatActivity {
                         Util.generateNoteOnSD(context, "MenuReq.txt", menu);
                         hitURLMENU(menu);
                     }
-
                 }
             }
 
@@ -1025,6 +1074,34 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    private void showOfflineProceedDiag(String msg, String title) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(msg);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        arg0.dismiss();
+                        password_Dialog("Q");
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public void checkForOffline()
+    {
+        PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
+        if(partialOnlineData != null && partialOnlineData.getOfflineLogin() != null && partialOnlineData.getOfflineLogin().equals("Y"))
+        {
+            showOfflineProceedDiag("No Network go to Offline Txn's","Network Unavailable");
+        }
+        else
+            show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection), 0);
     }
 
 }

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">CHHATTISGARH PDS</string>
 
 
@@ -446,6 +446,15 @@ Biometrics and/or One Time Pin (OTP) data for Aadhaar based authentication
     <string name="Commodity">Commodity</string>
     <string name="Issued">Issued</string>
     <string name="Sno">S.no</string>
+
+
+    //offline
+
+
+    <string name="Internet_Not_Available" tools:ignore="MissingTranslation" translatable="false">Network is Not Available</string>
+
+
+
 
 
 

@@ -147,12 +147,26 @@ public class StartActivity extends AppCompatActivity {
                     int offLineCheckFlag = db.checkForOfflineDistribution();
                     if(offLineCheckFlag == 0)
                     {
+                        show_error_box_offline(context.getResources().getString(R.string.Internet_Not_Available), context.getResources().getString(R.string.Internet_Connection));
+                    }
+                    else if(offLineCheckFlag < 0)
+                        show_error_box("Invalid offline Data","Offline Data Not available,Please Start in online mode");
+                    else
+                        show_error_box(context.getResources().getString(R.string.Internet_Not_Available), context.getResources().getString(R.string.Internet_Connection));
+
+
+
+                   /* int offLineCheckFlag = db.checkForOfflineDistribution();
+                    if(offLineCheckFlag == 0)
+                    {
                         password_Dialog("Q");
                     }
                     else if(offLineCheckFlag == -1)
                         show_error_box("Invalid offline Data","Offline Data Not available,Please Start in online mode");
                     else
                         show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection));
+                */
+
                 }
             }
         });
@@ -454,6 +468,45 @@ public class StartActivity extends AppCompatActivity {
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
+
+
+    private void show_error_box_offline(String msg, String title) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(msg);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                        password_Dialog("Q");
+
+
+                        //else
+                            //show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection));
+                    }
+
+
+                });
+          AlertDialog alertDialog = alertDialogBuilder.create();
+          alertDialog.show();
+             alertDialogBuilder.setNegativeButton(context.getResources().getString(R.string.Cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+          AlertDialog alertDialog1 = alertDialogBuilder.create();
+          alertDialog1.show();
+    }
+
+
+
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

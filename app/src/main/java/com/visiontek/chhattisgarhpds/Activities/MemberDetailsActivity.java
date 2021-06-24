@@ -129,7 +129,7 @@ public class MemberDetailsActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
-                if (memberModel.uid.equals("NA")){
+                if (memberModel.uid == null || memberModel.uid.equals("NA")){
                     show_error_box(context.getResources().getString(R.string.NA_MSG), context.getResources().getString(R.string.NA), 0);
                     return;
                 }
@@ -315,6 +315,7 @@ public class MemberDetailsActivity extends AppCompatActivity {
                         }else if (type==2){
                             AadhaarDialog();
                         }else if (type==3){
+
                             Intent ration = new Intent(context, RationDetailsActivity.class);
                             ration.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             ration.putExtra("OBJ", memberModel);
@@ -907,11 +908,24 @@ public class MemberDetailsActivity extends AppCompatActivity {
 
     public void proceedInPartialOffline()
     {
-        Intent ration = new Intent(context, RationDetailsActivity.class);
-        ration.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        ration.putExtra("txnType","P");
-        ration.putExtra("rationCardNo",memberConstants.carddetails.rcId);
-        startActivity(ration);
-        finish();
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage("No Network go to Offline Txns");
+        alertDialogBuilder.setTitle("Network Unavailable");
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent ration = new Intent(context, RationDetailsActivity.class);
+                        ration.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        ration.putExtra("txnType","P");
+                        ration.putExtra("rationCardNo",memberConstants.carddetails.rcId);
+                        startActivity(ration);
+                        finish();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
     }
 }

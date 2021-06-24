@@ -76,6 +76,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
     String txnType,rationCardNo;
     DatabaseHelper databaseHelper;
     int offlineEligibleFlag ;
+    String saleStateFpsId;
 
 
     private final ExecutorService es = Executors.newScheduledThreadPool(30);
@@ -107,6 +108,16 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
 
         txnType = getIntent().getStringExtra("txnType");
         rationCardNo = getIntent().getStringExtra("rationCardNo");
+        if(txnType.equals("O"))
+        {
+            saleStateFpsId = dealerConstants.stateBean.statefpsId;
+        }
+        else
+        {
+            PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
+            dealername = databaseHelper.getOfflineDealerName();
+            saleStateFpsId = partialOnlineData.getOffPassword();
+        }
 
 
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -160,12 +171,8 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
         {
             Date now = new Date();
             String deviceTxnId,orderDateTime;
-            PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
             if(!isOnlineTransaction)
             {
-                dealername = databaseHelper.getOfflineDealerName();
-                dealerConstants = new Dealer();
-                dealerConstants.stateBean.statefpsId = partialOnlineData.getOffPassword();
                 DateFormat dateFormat = new SimpleDateFormat("hhmmss");
                 DateFormat orderdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
@@ -270,7 +277,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
 
                 image(str1,"header.bmp",1);
                 str2 = context.getResources().getString(R.string.FPS_Owner_Name) + " :" + dealername + "\n"
-                        + context.getResources().getString(R.string.FPS_No) + " :" +dealerConstants.stateBean.statefpsId + "\n"
+                        + context.getResources().getString(R.string.FPS_No) + " :" + saleStateFpsId + "\n"
                         + context.getResources().getString(R.string.Name_of_Consumer) + " :" +printReceipt.printBeans.get(0).comm_name+ "\n"
                         + context.getResources().getString(R.string.Card_No) + " :" + printReceipt.rcId + "\n"
                         + context.getResources().getString(R.string.TransactionID) + " :" + printReceipt.receiptId + "\n"
@@ -301,7 +308,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
 
                 str2 = "\n________________________________\n"
                         + context.getResources().getString(R.string.FPS_Owner_Name) + "  :" + dealername + "\n"
-                        + context.getResources().getString(R.string.FPS_No) + "          :" + dealerConstants.stateBean.statefpsId + "\n"//dealerConstants.stateBean.statefpsId
+                        + context.getResources().getString(R.string.FPS_No) + "          :" + saleStateFpsId + "\n"
                         + context.getResources().getString(R.string.Name_of_Consumer) + ":" + printReceipt.printBeans.get(0).comm_name + "\n"
                         + context.getResources().getString(R.string.Card_No) + "        :" + printReceipt.rcId  + "\n"
                         + context.getResources().getString(R.string.TransactionID) + "   :" + printReceipt.receiptId + "\n"

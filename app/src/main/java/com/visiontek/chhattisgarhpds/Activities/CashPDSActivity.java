@@ -79,7 +79,9 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
     TextView rd;
     String txnType;
     DatabaseHelper databaseHelper;
-    int offlineEligibleFlag ;
+    int offlineEligibleFlag;
+
+    String tempTxnType;
 
 
     private CashPDSActivity mActivity;
@@ -107,6 +109,7 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
         context = CashPDSActivity.this;
         txnType = getIntent().getStringExtra("txnType");
         pd = new ProgressDialog(context);
+        radiorc = findViewById(R.id.radio_rc_no);
         radioaadhaar = findViewById(R.id.radio_aadhaar);
         if(!txnType.equals("O")){
             radioaadhaar.setEnabled(false);
@@ -145,11 +148,13 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
                     if (txnType.equals("O") && Util.networkConnected(context))
                         member_details();
                     else {
+                        //Toast.makeText((context), "select :: "+select+",offlineEligibleFlag ::"+offlineEligibleFlag, Toast.LENGTH_SHORT).show();
 
-                        if (select == 1 && offlineEligibleFlag == 0) {
-                            if(txnType.equals("O"))
-                                txnType = "P";
-                            tryInOfflineMode(Cash_ID);
+                       if (offlineEligibleFlag == 0) {
+                           if (tempTxnType.equals("O"))
+                                proceedInPartialOffline(Cash_ID,select);
+                           else
+                               tryInOfflineMode(Cash_ID);
                         }
                         else
                             show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection));
@@ -188,6 +193,9 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
             }
         });
 
+
+
+
         mTerminal100API = new MTerminal100API();
         mTerminal100API.initPrinterAPI(this, this);
         last.setEnabled(false);
@@ -215,7 +223,7 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
                             memberConstants.commDetails  = commDetails;
                             Intent intent = new Intent(getApplicationContext(), RationDetailsActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("txnType", txnType);
+                            intent.putExtra("txnType", tempTxnType);
                             intent.putExtra("rationCardNo", Cash_ID);
                             startActivity(intent);
                             id.setText("");
@@ -442,10 +450,8 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
         if (networkConnected(context)) {
             hitURL(members);
         } else {
-            if (select == 1 && offlineEligibleFlag == 0) {
-                if(txnType.equals("O"))
-                    txnType = "P";
-                tryInOfflineMode(Cash_ID);
+            if (offlineEligibleFlag == 0) {
+                proceedInPartialOffline(Cash_ID,select);
             }
             else
                 show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection));
@@ -507,8 +513,7 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
     }
 
     public void onRadioButtonClicked(View v) {
-        radiorc = findViewById(R.id.radio_rc_no);
-        radioaadhaar = findViewById(R.id.radio_aadhaar);
+
         boolean checked = ((RadioButton) v).isChecked();
         if (checked) {
             switch (v.getId()) {
@@ -702,6 +707,44 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
                 }
             }
         }
+    }
+
+
+    public void proceedInPartialOffline(String rcNumber,int selectType)
+    {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage("No Network go to Offline Txns");
+        alertDialogBuilder.setTitle("Network Unavailable");
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                        if (txnType.equals("O"))
+                            tempTxnType = "P";
+
+                        if(selectType == 2)
+                        {
+                            show_error_box("Please Proceed with Ration Card","Invalid Card Type");
+                            return;
+                        }
+                        tryInOfflineMode(rcNumber);
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        radioGroup.check(radiorc.getId());
+        select = 1;
+        tempTxnType = txnType;
     }
 }
 

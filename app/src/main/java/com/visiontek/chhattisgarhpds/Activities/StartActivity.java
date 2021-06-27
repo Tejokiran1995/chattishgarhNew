@@ -128,10 +128,11 @@ public class StartActivity extends AppCompatActivity {
         PS = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE);
 
-        start.setOnClickListener(new View.OnClickListener() {
+        start.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
-                if (Util.networkConnected(context)) {
+                if (false && Util.networkConnected(context)) {
                     if (mp!=null) {
                         releaseMediaPlayer(context,mp);
                     }
@@ -230,6 +231,7 @@ public class StartActivity extends AppCompatActivity {
 
             }
         });
+
         alert.setNegativeButton(context.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }

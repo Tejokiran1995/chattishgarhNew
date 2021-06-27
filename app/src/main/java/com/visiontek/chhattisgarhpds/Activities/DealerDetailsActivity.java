@@ -38,6 +38,7 @@ import com.visiontek.chhattisgarhpds.Models.DATAModels.DataModel;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetURLDetails.fpsCommonInfoModel.fpsCommonInfo;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetUserDetails.DealerModel;
 import com.visiontek.chhattisgarhpds.Models.PartialOnlineData;
+import com.visiontek.chhattisgarhpds.Models.UploadingModels.UploadDataModel;
 import com.visiontek.chhattisgarhpds.R;
 import com.visiontek.chhattisgarhpds.Utils.DatabaseHelper;
 import com.visiontek.chhattisgarhpds.Utils.Json_Parsing;
@@ -349,11 +350,13 @@ public class DealerDetailsActivity extends AppCompatActivity {
         String errorMessage = databaseHelper.loginByPassword(this,password);
         if(errorMessage.isEmpty())
         {
-            Intent home = new Intent(context, HomeActivity.class);
+
+            showTxnsdetails(txnType);
+           /* Intent home = new Intent(context, HomeActivity.class);
             home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             home.putExtra("txnType",txnType);
             startActivity(home);
-            finish();
+            finish();*/
         }
         else
         {
@@ -503,30 +506,32 @@ public class DealerDetailsActivity extends AppCompatActivity {
                     show_error_box(msg, context.getResources().getString(R.string.MenuList) + isError, 0);
                 } else {
 
-                    Intent home = new Intent(context, HomeActivity.class);
+
+                    showTxnsdetails("O");
+                    /*Intent home = new Intent(context, HomeActivity.class);
                     home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     home.putExtra("txnType","O");
                     startActivity(home);
-                    finish();
+                    finish();*/
                 }
             }
         });
         request.execute();
     }
 
-    public void gettingTxnsdetails(){
-
-
+    public void showTxnsdetails(String txnType)
+    {
         AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this,
                 AlertDialog.THEME_HOLO_LIGHT);
         alert.setTitle("");
+        UploadDataModel uploadDataModel = new UploadDataModel();
         alert.setMessage("PDS-P2.3.00 \n" +
-                "Total Txn Records : 13 \n " +
+                "Total Txn Records :"+uploadDataModel.getTotalRecords()+"\n " +
                 "Online Txn Records : 5 \n " +
                 "Offline Txn Records : 8 \n" +
-                "Uploaded Records : 8 \n" +
-                "Pending Records : 0 \n" +
-                "Alloted Month&Year : 6-2021 \n" +
+                "Uploaded Records : "+uploadDataModel.getUploadingRecords()+"\n" +
+                "Pending Records : "+uploadDataModel.getPendingRecords()+"\n" +
+                "Alloted Month&Year :"+uploadDataModel.getDistributionMonth()+"-"+uploadDataModel.getDistributionYear()+"\n" +
                 "Date : 23-06-2021 T:10:58:02 \n" +
                 "Fps Id : 123456789141");
         alert.setPositiveButton("OK",
@@ -534,13 +539,14 @@ public class DealerDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which){
                         dialog.dismiss();
+                        Intent home = new Intent(context, HomeActivity.class);
+                        home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        home.putExtra("txnType",txnType);
+                        startActivity(home);
+                        finish();
                     }
                 });
-
         alert.show();
-
-
-
     }
 
 
@@ -866,7 +872,8 @@ public class DealerDetailsActivity extends AppCompatActivity {
         public void showMessage(String message)
         {
             pd.setMessage(message);
-            mHandler.post(new Runnable() {
+            mHandler.post(new Runnable()
+            {
                 public void run() {
                     pd.show();
                 }
@@ -883,7 +890,18 @@ public class DealerDetailsActivity extends AppCompatActivity {
             {
                 if(errorMessage.isEmpty())
                 {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this);
+
+
+
+                    String keyregister = "{\n" +
+                            "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
+                            "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
+                            "\"terminalId\" : " + "\"" + DEVICEID + "\"" + ",\n" +
+                            "\"token\" : " + "\"" + OFFLINE_TOKEN + "\"" + ",\n" +
+                            "\"stateCode\" : " + "\"" + "22" + "\"" + "\n" +
+                            "}";
+                    keyregisterurl(keyregister);
+                    /*AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this);
                     alert.setTitle("Upload Result");
                     alert.setMessage(errorMessage);
                     alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -900,7 +918,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                             keyregisterurl(keyregister);
                         }
                     });
-                    alert.show();
+                    alert.show();*/
                 }
                 else
                 {

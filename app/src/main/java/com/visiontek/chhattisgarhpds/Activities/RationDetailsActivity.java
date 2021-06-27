@@ -141,6 +141,7 @@ public class RationDetailsActivity extends AppCompatActivity {
         Display(0);
 
 
+
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -472,7 +473,8 @@ public class RationDetailsActivity extends AppCompatActivity {
         return -1;
     }
 
-    private String add_comm() {
+    private String add_comm()
+    {
         TOTALAMOUNT = 0.0;
         StringBuilder add = new StringBuilder();
         String str;
@@ -489,7 +491,8 @@ public class RationDetailsActivity extends AppCompatActivity {
         if (userCommModelssize > 0) {
             for (int i = 0; i < userCommModelssize; i++) {
                 commqty = Float.parseFloat((memberConstants.commDetails.get(i).requiredQty));
-                if (commqty>0.0) {
+                if (commqty>0.0)
+                {
                     commprice = Float.parseFloat((memberConstants.commDetails.get(i).price));
                     commamount = commprice * commqty;
                     TOTALAMOUNT = TOTALAMOUNT + commamount;

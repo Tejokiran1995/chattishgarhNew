@@ -393,6 +393,7 @@ public class Json_Parsing {
 
 
 
+
     private ReceiveGoodsDetails parse_recivegoods(String myResponse) {
         ReceiveGoodsDetails receiveGoodsDetails=new ReceiveGoodsDetails();
         infoTCDetails infoTCDetails=null;

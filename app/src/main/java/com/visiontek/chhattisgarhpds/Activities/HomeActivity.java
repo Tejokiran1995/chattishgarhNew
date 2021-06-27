@@ -49,7 +49,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         context = HomeActivity.this;
-
         txnType = getIntent().getStringExtra("txnType");
         pd = new ProgressDialog(context);
 

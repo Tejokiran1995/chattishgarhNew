@@ -23,7 +23,7 @@ public class printBeans implements Serializable {
             allocationType,
             allotedMonth,
             allotedYear,
-    closingBal;
+            closingBal;
 
     public String getBal_qty() {
         return bal_qty;

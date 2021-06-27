@@ -247,7 +247,8 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
 
     public void setUpNProceedToPrint(Print printReceipt,boolean isOnlineTransaction)
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
             String app;
             StringBuilder add = new StringBuilder();
             int printReceiptsize= printReceipt.printBeans.size();
@@ -269,7 +270,8 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
 
             String str1,str2,str3,str4,str5;
             String[] str = new String[4];
-            if (L.equals("hi")) {
+            if (L.equals("hi"))
+            {
 
                 str1 = context.getResources().getString(R.string.Chhattisgarh) + "\n"
                         + context.getResources().getString(R.string.Department) + "\n"

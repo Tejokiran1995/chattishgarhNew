@@ -1563,6 +1563,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
             }
 
+
+
+
             /*
             * if(DealerLoginBy == 2)
     {
@@ -1608,7 +1611,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try
         {
 
-            for (printBeans printBeanItem:printData.printBeans) {
+            for (printBeans printBeanItem:printData.printBeans)
+            {
                 ContentValues contentValues = new ContentValues();
                 Double balanceQuantity = Double.parseDouble(printBeanItem.getBal_qty());
                 Double requestQty = Double.parseDouble(printBeanItem.getCarry_over());

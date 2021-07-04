@@ -41,6 +41,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -70,6 +71,14 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static int compareDates(Date d1, Date d2) {
+        if (d1.getYear() != d2.getYear())
+            return d1.getYear() - d2.getYear();
+        if (d1.getMonth() != d2.getMonth())
+            return d1.getMonth() - d2.getMonth();
+        return d1.getDate() - d2.getDate();
     }
 
     public static void releaseMediaPlayer(Context context, MediaPlayer mp){

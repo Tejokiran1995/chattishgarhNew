@@ -144,6 +144,11 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
             @Override
             public void onClick(View v) {
                 Cash_ID = id.getText().toString().trim();
+                if(offlineEligibleFlag < 0)
+                {
+                    show_error_box("Invalid PartilaOnline Data","Please login again");
+                    return;
+                }
                 if (Cash_ID.length() == 12) {
                     if (txnType.equals("O") && Util.networkConnected(context))
                         member_details();

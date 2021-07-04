@@ -53,7 +53,8 @@ public class Json_Parsing {
         this.onResultListener = onResultListener;
     }
 
-    public void Parsing(String frame, final int type) {
+    public void Parsing(String frame, final int type)
+    {
         System.out.println("@@ Parsing Data..." + frame);
         OkHttpClient okHttpClient;
         okHttpClient = new OkHttpClient.Builder()
@@ -695,7 +696,8 @@ public class Json_Parsing {
         db.execSQL(query);
     }
 
-    public void parsegetFpsOfflineData(String strJson, Context context) throws Exception {
+    public void parsegetFpsOfflineData(String strJson, Context context) throws Exception
+    {
         System.out.println("@@ parsegetFpsOfflineData");
         JSONObject jsonRootObject = new JSONObject(strJson);
         JSONArray jsonArray = jsonRootObject.optJSONArray("keyRegister");

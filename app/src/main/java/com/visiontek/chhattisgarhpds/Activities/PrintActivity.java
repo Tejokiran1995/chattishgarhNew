@@ -44,6 +44,7 @@ import com.visiontek.chhattisgarhpds.Utils.XML_Parsing;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -145,9 +146,39 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                     Util.generateNoteOnSD(context, "RationReq.txt", ration);
                     hitURL(ration);
                 } else {
-                    if(txnType.equals("O"))
-                        txnType = "P";
-                    proceedForOfflineTransaction(false,new Print());
+                    if(offlineEligibleFlag == 0)
+                    {
+                        String message = databaseHelper.txnAllotedBetweenTime();
+                        if(message.isEmpty())
+                        {
+                            if(txnType.equals("O"))
+                            {
+                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                                alertDialogBuilder.setMessage("No Network go to Offline Txns");
+                                alertDialogBuilder.setTitle("Network Unavailable");
+                                alertDialogBuilder.setCancelable(false);
+                                alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface arg0, int arg1) {
+                                                txnType = "P";
+                                                proceedForOfflineTransaction(false,new Print());
+                                            }
+                                        });
+                                AlertDialog alertDialog = alertDialogBuilder.create();
+                                alertDialog.show();
+                            }
+                            else
+                                proceedForOfflineTransaction(false,new Print());
+                        }
+                        else
+                            show_error_box("Offline Distribution error",message, 0);
+                    }
+                    else
+                    {
+                        //net not available
+                    }
+
                 }
             }
         });
@@ -166,15 +197,13 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
 
     public void proceedForOfflineTransaction(boolean isOnlineTransaction,Print printData )
     {
-        int isOfflineOk = databaseHelper.txnAllotedBetweenTime();
-        if(isOfflineOk == 0)
-        {
+
             Date now = new Date();
             String deviceTxnId,orderDateTime;
             if(!isOnlineTransaction)
             {
                 DateFormat dateFormat = new SimpleDateFormat("hhmmss");
-                DateFormat orderdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                DateFormat orderdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                 Calendar calendar = Calendar.getInstance();
                 int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
@@ -183,7 +212,15 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
             }
             else
             {
-                orderDateTime = printData.printBeans.get(0).transaction_time;
+                DateFormat fromDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                DateFormat toDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date orderDate = null;
+                try {
+                    orderDate = fromDateFormat.parse(printData.printBeans.get(0).transaction_time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                orderDateTime = toDateFormat.format(orderDate);
                 deviceTxnId = printData.receiptId;
             }
 
@@ -206,9 +243,6 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                 //Transaction Failed...Show error Message
                 show_error_box("Distribution Response","Distribution Failed,Please try again",0);
             }
-        }
-        else
-            show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg),context.getResources().getString(R.string.Internet_Connection), 0);
     }
 
     private void hitURL(String ration) {

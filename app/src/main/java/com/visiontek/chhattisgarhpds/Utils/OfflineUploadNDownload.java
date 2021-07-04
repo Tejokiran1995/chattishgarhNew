@@ -51,6 +51,9 @@ public class OfflineUploadNDownload {
         String url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/pushFpsOfflineData";
         Gson gson = new Gson();
 
+        int previousPendingCount = 21;
+        int failedTrails = 0;
+
 
         while(true) {
 
@@ -66,6 +69,18 @@ public class OfflineUploadNDownload {
             int uploadingRecords = commWiseData.size();
             if (uploadingRecords == 0)
                 break;
+            if(uploadingRecords >= previousPendingCount)
+            {
+                failedTrails++;
+            }
+            else
+                failedTrails = 0;
+            if(failedTrails >= 2)
+            {
+                Log.e("[ManlSrUpldPartialTxns]","upload failed 2 times with same request");
+                return -1;
+            }
+            previousPendingCount = uploadingRecords;
             uploadDataModel.setFpsId(fpsId);
             uploadDataModel.setSessionId(fpsSessionId);//
             uploadDataModel.setStateCode("22");
@@ -258,7 +273,7 @@ public class OfflineUploadNDownload {
             {
                 sqLiteDatabase.execSQL("update BenfiaryTxn set TxnUploadSts = 'Y'");
                 String deleteStatus = jsonRootObject.getString("deleteStatus");
-                JSONArray jsonArray1 = jsonRootObject.optJSONArray("fpsCb");
+                //JSONArray jsonArray1 = jsonRootObject.optJSONArray("fpsCb");
                 if(deleteStatus.equals("Y") && partialOnlineData.getOfflineLogin().equals("Y"))
                 {
                     sqLiteDatabase.execSQL("DELETE FROM KeyRegister");

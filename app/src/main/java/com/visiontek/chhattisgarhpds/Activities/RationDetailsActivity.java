@@ -126,6 +126,11 @@ public class RationDetailsActivity extends AppCompatActivity {
         rationCardNo = getIntent().getStringExtra("rationCardNo");
         offlineEligibleFlag = databaseHelper.checkForOfflineDistribution();
 
+        if(offlineEligibleFlag < 0)
+        {
+            showAndFinish("Invalid PartilaOnline Data","Please login again");
+        }
+
         boolean rd_fps;
         rd_fps = RDservice(context);
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -508,7 +513,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                             "<price>" + memberConstants.commDetails.get(i).totalPrice + "</price>\n" +
                             "</commodityDetail>\n";
                     add.append(str);
-                    if(offlineEligibleFlag == 0)
+                    if(offlineEligibleFlag ==0)
                     {
                         double requiredQty = Double.parseDouble(memberConstants.commDetails.get(i).requiredQty);
                         double price = Double.parseDouble(memberConstants.commDetails.get(i).price);
@@ -551,7 +556,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                 if(balanceNotAvailableItemCount != 0)
                 {
                     show_error_box("InSuffiecient Offline Entitlement","Balance Qty not available for Some Items");
-                    return "";
+                    return null;
                 }
             }
 
@@ -565,7 +570,7 @@ public class RationDetailsActivity extends AppCompatActivity {
     private void conformRation() {
 
         String com = add_comm();
-        if (!com.equals(null) && com.length()>0) {
+        if (com != null && com.length()>0) {
 
             if (txnType.equals("O") && Util.networkConnected(context)) {
                 String ration = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
@@ -806,6 +811,26 @@ public class RationDetailsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface arg0, int arg1) {
                         if (pd.isShowing()) {
                             pd.dismiss();
+                        }
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    private void showAndFinish(String msg, String title) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(msg);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        if (pd.isShowing()) {
+                            pd.dismiss();
+                            arg0.dismiss();
+                            finish();
                         }
                     }
                 });

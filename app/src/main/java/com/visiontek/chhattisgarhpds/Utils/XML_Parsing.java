@@ -1509,7 +1509,7 @@ public class XML_Parsing extends AsyncTask<String, Void, Void> {
 
 //            ContentValues cv = new ContentValues();
 //            cv.put("OffPassword",offlinePassword);
-//            long x = databaseHelper.insertOrReplacePartialOnlineData(context,cv);
+//            long x = databaseHelper.insertOrformattedDateOnlineData(context,cv);
 //            System.out.println("insertOrReplacePartialOnlineData returned*****************************" + x);
 
         } catch (XmlPullParserException e) {

@@ -44,6 +44,8 @@
 
 
 
+
+
     <string name="printsuccess">Print Success</string>
     <string name="printfailed">Print Failed</string>
 
@@ -91,6 +93,7 @@
     <string name="Receive_Goods">Receive Goods</string>
     <string name="Reports">Reports</string>
     <string name="Others">Others</string>
+    <string name="Uploaddata" translatable="false">Upload Data</string>
     <string name="Logout">Logout</string>
 
     //issue

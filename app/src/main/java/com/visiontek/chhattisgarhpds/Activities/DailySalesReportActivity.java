@@ -82,6 +82,7 @@ public class DailySalesReportActivity extends AppCompatActivity implements Print
     private ArrayList<DataModel3> data;
     SaleDetails saleDetails;
     DatabaseHelper databaseHelper;
+    String saleStateFpsId;
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -149,6 +150,7 @@ public class DailySalesReportActivity extends AppCompatActivity implements Print
                 {
                     PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
                     if(!partialOnlineData.getOfflineLogin().equals("Y") && networkConnected(context)) {
+                        saleStateFpsId = dealerConstants.stateBean.statefpsId;
                         String sale = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
                                 "<SOAP-ENV:Envelope\n" +
                                 "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
@@ -180,8 +182,7 @@ public class DailySalesReportActivity extends AppCompatActivity implements Print
                     {
                         if(partialOnlineData.getOfflineLogin().equals("Y"))
                         {
-                            dealerConstants = new Dealer();
-                            dealerConstants.stateBean.statefpsId = partialOnlineData.getOffPassword();
+                            saleStateFpsId = partialOnlineData.getOffPassword();
                             getOfflineRecords(date);
                         }
                         else
@@ -226,7 +227,7 @@ public class DailySalesReportActivity extends AppCompatActivity implements Print
                         image(str1,"header.bmp",1);
                      str2=context.getResources().getString(R.string.Date)+" : " + date +"\n"+ context.getResources().getString(R.string.Time)+" :" + time + "\n"
                             +context.getResources().getString(R.string.Day_Report_Date)+" : " + date + "\n"
-                            +context.getResources().getString(R.string.FPS_ID)+" : "+ dealerConstants.stateBean.statefpsId + "\n";
+                            +context.getResources().getString(R.string.FPS_ID)+" : "+saleStateFpsId + "\n";
 
                      str3 = String.format("%-13s%-13s%-14s",context.getResources().getString(R.string.commodity),context.getResources().getString(R.string.scheme),context.getResources().getString(R.string.sale));
 
@@ -248,7 +249,7 @@ public class DailySalesReportActivity extends AppCompatActivity implements Print
                          str1 = context.getResources().getString(R.string.DAY_REPORT)+"\n\n";
                          str2=context.getResources().getString(R.string.Date)+"           : " + date +"\n"+ context.getResources().getString(R.string.Time)+"           :" + time + "\n"
                                 +context.getResources().getString(R.string.Day_Report_Date)+": " + date + "\n"
-                                +context.getResources().getString(R.string.FPS_ID)+"         : "+ dealerConstants.stateBean.statefpsId + "\n"
+                                +context.getResources().getString(R.string.FPS_ID)+"         : "+ saleStateFpsId + "\n"
                                 + "-------------------------------\n";
                         str3 = String.format("%-13s%-13s%-14s",context.getResources().getString(R.string.commodity),context.getResources().getString(R.string.scheme),context.getResources().getString(R.string.sale))+"\n"
                                 + "-------------------------------\n";

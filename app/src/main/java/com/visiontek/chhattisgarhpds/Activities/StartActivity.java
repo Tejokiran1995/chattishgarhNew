@@ -132,7 +132,7 @@ public class StartActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View v) {
-                if (false && Util.networkConnected(context)) {
+                if (Util.networkConnected(context)) {
                     if (mp!=null) {
                         releaseMediaPlayer(context,mp);
                     }

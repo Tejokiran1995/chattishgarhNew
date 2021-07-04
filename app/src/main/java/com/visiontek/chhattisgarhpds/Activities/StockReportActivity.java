@@ -253,6 +253,7 @@ public class StockReportActivity extends AppCompatActivity implements PrinterCal
                 StockReportActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         setAdapterData();
                     }
                 });

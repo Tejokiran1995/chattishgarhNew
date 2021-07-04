@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,7 +39,7 @@ import static com.visiontek.chhattisgarhpds.Utils.Util.toast;
 public class HomeActivity extends AppCompatActivity {
     String token = "9f943748d8c1ff6ded5145c59d0b2ae7";
     String mode = "PDS";
-    Button issue, inspection, aadhar, receive, reports, others,logout;
+    Button issue, inspection, aadhar, receive, reports, others,uploaddata,logout;
     Intent i;
     Context context;
     TextView rd;
@@ -59,6 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         receive = findViewById(R.id.receive_goods);
         reports = findViewById(R.id.reports);
         others = findViewById(R.id.others);
+        uploaddata =findViewById(R.id.uploaddata);
         rd = findViewById(R.id.rd);
         if(!txnType.equals("O")){
 
@@ -155,6 +157,15 @@ public class HomeActivity extends AppCompatActivity {
                 toast(context, context.getResources().getString(R.string.Not_Enabled));
             }
         });
+        uploaddata.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(context, "upload..... function", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override

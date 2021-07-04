@@ -11,8 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
-
-
         <TextView
             android:id="@+id/rd"
             android:layout_width="wrap_content"
@@ -33,6 +31,8 @@
             android:textStyle="bold"
             android:text="@string/HOME"/>
     </androidx.appcompat.widget.Toolbar>
+
+
     <LinearLayout
         android:id="@+id/innerlayout"
         android:layout_width="match_parent"
@@ -46,7 +46,6 @@
             android:weightSum="2">
 
             <Button
-
                 android:id="@+id/issue"
                 android:layout_width="@dimen/ButtonW"
                 android:layout_height="@dimen/ButtonH"
@@ -128,17 +127,38 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/TextsizeB"/>
         </LinearLayout>
-    </LinearLayout>
-    <Button
-        android:layout_gravity="center"
-        android:id="@+id/logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/ButtonM"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:weightSum="1">
+            <Button
+                android:id="@+id/uploaddata"
+                android:layout_width="@dimen/ButtonW"
+                android:layout_height="@dimen/ButtonH"
+                android:layout_margin="@dimen/ButtonM"
+                android:layout_weight="1"
+                android:background="@color/button"
+                android:textStyle="bold"
+                android:text="@string/Uploaddata"
+                android:textColor="@color/white"
+                android:textSize="@dimen/TextsizeB"/>
+            <Button
+                android:layout_gravity="center"
+                android:id="@+id/logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/ButtonM"
+                android:background="@color/cancel"
+                android:textStyle="bold"
+                android:text="@string/Logout"
+                android:textColor="@color/white"
+                android:textSize="@dimen/TextsizeB"/>
 
-        android:background="@color/cancel"
-        android:textStyle="bold"
-        android:text="@string/Logout"
-        android:textColor="@color/white"
-        android:textSize="@dimen/TextsizeB"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
 </LinearLayout>

@@ -38,6 +38,7 @@ import com.visiontek.chhattisgarhpds.Models.DATAModels.DataModel;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetURLDetails.fpsCommonInfoModel.fpsCommonInfo;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetUserDetails.DealerModel;
 import com.visiontek.chhattisgarhpds.Models.PartialOnlineData;
+import com.visiontek.chhattisgarhpds.Models.UploadingModels.CommWiseData;
 import com.visiontek.chhattisgarhpds.Models.UploadingModels.UploadDataModel;
 import com.visiontek.chhattisgarhpds.R;
 import com.visiontek.chhattisgarhpds.Utils.DatabaseHelper;
@@ -442,8 +443,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                             Util.generateNoteOnSD(context, "DealerFusionReq.txt", fusion);
                             hitURLfusion(fusion);
                         }
-
-                        if(dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus.equals("Y"))
+                       if(dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus.equals("Y"))
                             new UploadPendingRecords(dealerConstants.fpsCommonInfo.fpsSessionId,dealerConstants.stateBean.statefpsId,"",dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus).execute();
                         else{
                              String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
@@ -521,19 +521,34 @@ public class DealerDetailsActivity extends AppCompatActivity {
 
     public void showTxnsdetails(String txnType)
     {
+        int offlineCount = 0,onlineCount = 0,uploadedCount = 0,pendingCount = 0;
+        try {
+            int saleRecordCount[] = databaseHelper.getSaleRecordAgrregateCounts();
+            onlineCount = saleRecordCount[0];
+            offlineCount = saleRecordCount[1];
+            uploadedCount = saleRecordCount[2];
+            pendingCount = saleRecordCount[3];
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
+
+
         AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this,
                 AlertDialog.THEME_HOLO_LIGHT);
         alert.setTitle("");
-        UploadDataModel uploadDataModel = new UploadDataModel();
         alert.setMessage("PDS-P2.3.00 \n" +
-                "Total Txn Records :"+uploadDataModel.getTotalRecords()+"\n " +
-                "Online Txn Records : 5 \n " +
-                "Offline Txn Records : 8 \n" +
-                "Uploaded Records : "+uploadDataModel.getUploadingRecords()+"\n" +
-                "Pending Records : "+uploadDataModel.getPendingRecords()+"\n" +
-                "Alloted Month&Year :"+uploadDataModel.getDistributionMonth()+"-"+uploadDataModel.getDistributionYear()+"\n" +
+                "Total Txn Records :"+onlineCount+offlineCount+uploadedCount+pendingCount+"\n " +
+                "Online Txn Records : "+onlineCount+" \n " +
+                "Offline Txn Records : "+offlineCount+" \n" +
+                "Uploaded Records : "+uploadedCount+"\n" +
+                "Pending Records : "+pendingCount+"\n" +
+                "Alloted Month&Year :"+partialOnlineData.getAllotMonth()+"-"+partialOnlineData.getAllotYear()+"\n" +
                 "Date : 23-06-2021 T:10:58:02 \n" +
-                "Fps Id : 123456789141");
+                "Fps Id : "+dealerConstants.fpsCommonInfo.fpsId);
         alert.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -891,8 +906,6 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 if(errorMessage.isEmpty())
                 {
 
-
-
                     String keyregister = "{\n" +
                             "\"fpsId\" : " + "\"" + fpsId+ "\"" + ",\n" +
                             "\"sessionId\" : " + "\"" + fpsSessionId + "\"" + ",\n" +
@@ -988,7 +1001,8 @@ public class DealerDetailsActivity extends AppCompatActivity {
         System.out.println("@@Executing: " +keyregister);
         pd = ProgressDialog.show(context, context.getResources().getString(R.string.Beneficiary_Details), context.getResources().getString(R.string.Consent_Form), true, false);
         Json_Parsing request = new Json_Parsing(context, keyregister, 5);
-        request.setOnResultListener(new Json_Parsing.OnResultListener() {
+        request.setOnResultListener(new Json_Parsing.OnResultListener()
+        {
 
             @Override
             public void onCompleted(String code, String msg,Object object) throws SQLException {
@@ -1041,7 +1055,6 @@ public class DealerDetailsActivity extends AppCompatActivity {
 
         });
     }
-
     private void CBDownload(String keyregister) {
         System.out.println("@@ In CBDownload");
         pd = ProgressDialog.show(context, context.getResources().getString(R.string.Beneficiary_Details), context.getResources().getString(R.string.Consent_Form), true, false);

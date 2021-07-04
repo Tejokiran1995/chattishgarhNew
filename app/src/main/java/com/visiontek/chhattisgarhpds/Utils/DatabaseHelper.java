@@ -1533,9 +1533,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public  int txnAllotedBetweenTime()
+    public  String txnAllotedBetweenTime()
     {
         PartialOnlineData partialOnlineData = null;
+        String errormessage = "";
         try {
             partialOnlineData = getPartialOnlineData();
             {
@@ -1547,7 +1548,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Date userDate = parser.parse(parser.format(new Date()));
                 if (userDate.before(startTime) || userDate.after(endTimme)) {
                     Log.e("[txnAllotedBetweenTime]","This not allowed time to login");
-                    return -3;
+                    return  "This not allowed time to distribute";
                 }
             }
 
@@ -1556,10 +1557,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Date currentDate = new Date();
 
                 Date stoppedDate = df.parse(partialOnlineData.getpOfflineStoppedDate());
-                if(stoppedDate.compareTo(currentDate) < 0)
+                int dateFlag = Util.compareDates(currentDate,stoppedDate);
+                if(dateFlag > 0)
                 {
                     Log.e("[txnAllotedBetweenTime]","Month Changed\nPlease login by authentication");
-                    return -3;
+                    return "Month Changed\nPlease login by authentication";
                 }
             }
 
@@ -1590,12 +1592,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         } catch (ParseException e) {
             e.printStackTrace();
+            errormessage = e.getLocalizedMessage();
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            errormessage = e.getLocalizedMessage();
         }
-        return 0;
+        return errormessage;
     }
 
     public boolean updateOfflineData(Context context, Print printData, String rcNumber, String txnType,String deviceTxnId,String orderDateTime)
@@ -1746,7 +1750,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<commDetails> commodityDetails= new ArrayList<>();
         db = this.getReadableDatabase();
         try {
-            String query = "SELECT KR.allocationType, KR.allotedMonth, KR.allotedYear, KR.totalEntitlement - KR.balanceEntitlement, KR.balanceEntitlement, PO.closingBalance, KR.commNameEn, KR.commNameLl, KR.commcode, KR.Unit, 1, commPrice, 0 requiredQty, KR.totalEntitlement totQty, 'N' weighing, 0 FROM KeyRegister KR, Pos_ob PO WHERE rcId = '"+rcNumber+"' AND KR.commCode = PO.commCode GROUP BY KR.allocationType, KR.AllotMonth, KR.AllotYear, KR.rcId, KR.commCode;";
+            String query = "SELECT KR.allocationType, KR.allotedMonth, KR.allotedYear, KR.totalEntitlement - KR.balanceEntitlement, KR.balanceEntitlement, PO.closingBalance, KR.commNameEn, KR.commNameLl, KR.commcode, KR.Unit, 1, commPrice, 0.0 requiredQty, KR.totalEntitlement totQty, 'N' weighing, 0 FROM KeyRegister KR, Pos_ob PO WHERE rcId = '"+rcNumber+"' AND KR.commCode = PO.commCode GROUP BY KR.allocationType, KR.AllotMonth, KR.AllotYear, KR.rcId, KR.commCode;";
             Cursor res = db.rawQuery( query,null,null);
             res.moveToFirst();
             System.out.println("query :: "+query+", COUNT :: " + res.getCount());
@@ -2063,7 +2067,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try
         {
-            String query = "SELECT A.carry_over, A.allocationType, A.allotedMonth, A.allotedYear, A.commCode, ifnull(B.balanceEntitlement,0.0) balanceQty, A.carry_over issueQty FROM Print_Table A LEFT JOIN ( SELECT commCode, balanceEntitlement, allocationType, allotedMonth, allotedYear FROM KeyRegister WHERE rcId = '"+rcNumber+"' ) B ON A.commCode = B.commCode AND A.allocationType = B.allocationType AND A.allotedMonth = B.allotedMonth AND A.allotedYear = B.allotedYear WHERE balanceQty + 0 < issueQty + 0; ";
+            String query = "SELECT A.carry_over, A.allocationType, A.allotedMonth, A.allotedYear, A.commCode, ifnull(B.balanceEntitlement,0.0) balanceQty, A.carry_over issueQty FROM Print_Table A LEFT JOIN ( SELECT commCode, balanceEntitlement, allocationType, allotedMonth, allotedYear FROM KeyRegister" +
+                    " WHERE rcId = '"+rcNumber+"' ) B ON A.commCode = B.commCode AND A.allocationType = B.allocationType AND A.allotedMonth = B.allotedMonth AND A.allotedYear = B.allotedYear WHERE balanceQty + 0 < issueQty + 0; ";
             Log.e("checkBalanceEntitlement","query :: "+query);
 
             Cursor res = sqLiteDatabase.rawQuery(query,null);
@@ -2102,7 +2107,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             res.moveToFirst();
             while (!res.isAfterLast())
             {
-                String txnTime = res.getString(11);//DateFormat orderdateFormat = new SimpleDateFormat("");
+                String txnTime = res.getString(11);
+
+                DateFormat fromDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                DateFormat toDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date orderDate = fromDateFormat.parse(txnTime);
+                txnTime = toDateFormat.format(orderDate);
                 CommWiseData commWiseData = new CommWiseData();
                 commWiseData.setRcId(res.getString(0));
                 commWiseData.setCommCode(res.getString(1));
@@ -2246,6 +2256,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if(db.isOpen())
                 db.close();
             return count;
+        }
+    }
+
+    public int[] getSaleRecordAgrregateCounts()
+    {
+        int offlineCount = 0,onlineCount = 0,uploadedCount = 0,pendingCount = 0;
+        String query = "SELECT count( * ), TxnType,TxnUploadSts FROM BenfiaryTxn GROUP BY TxnType,TxnUploadSts;";
+        SQLiteDatabase db = this.getReadableDatabase();
+        try
+        {
+            Cursor res = db.rawQuery(query,null);
+            System.out.println("RESULT>>>>>>>>"+res);
+            res.moveToFirst();
+            if (!res.isAfterLast())
+            {
+                String txnType = res.getString(1);
+                int count = res.getInt(0);
+                if(txnType.equals("O"))
+                    onlineCount += count;
+                else
+                {
+                    String txnUploadSts = res.getString(2);
+                    if(txnUploadSts.equals("Y"))
+                        uploadedCount += count;
+                    else
+                        pendingCount += count;
+                    offlineCount += count;
+                }
+
+            }
+            res.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if(db.isOpen())
+                db.close();
+            return new int[]{onlineCount,offlineCount,uploadedCount,pendingCount};
         }
     }
 

@@ -333,6 +333,7 @@
     <string name="PindCode">PindCode : </string>
     <string name="Gender">Gender : </string>
     <string name="Beneficiary_Details">Beneficiary Details</string>
+    <string name="updateDownloadSts">Updating Downloading Status\n      Please Wait ..</string>
     <string name="LAST_RECEIPT">LAST RECEIPT</string>
     <string name="Please_Enter_date_in_Edit_text_to_view_Stock">Please Enter date in Edit text to view Stock</string>
     <string name="Enter_Date">Enter Date</string>

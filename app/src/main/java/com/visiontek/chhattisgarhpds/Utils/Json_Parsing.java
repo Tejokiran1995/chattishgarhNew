@@ -84,6 +84,10 @@ public class Json_Parsing {
         {
             url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/pushFpsOfflineData";
         }
+//        else if(type == 9)
+//        {
+//            url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/dataDownloadACK";
+//        }
        /* if (type==17 || type==18){
 
             System.out.println(url);
@@ -307,6 +311,10 @@ public class Json_Parsing {
                 {
                     parseOfflineUploadResult(myResponse,context);
                 }
+                else if(type == 9)
+                {
+                    parseDataDownloadAckResult(myResponse,context);
+                }
             }
 
         });
@@ -484,6 +492,38 @@ public class Json_Parsing {
                     System.out.println("Query: " +query);
                     db.execSQL(query);
                 }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(db != null && db.isOpen())
+                db.close();
+        }
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    callback();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void parseDataDownloadAckResult(String strJson, Context context)
+    {
+        SQLiteDatabase db = null;
+        try {
+            JSONObject jsonRootObject = new JSONObject(strJson);
+            msg = jsonRootObject.getString("respMessage");
+            code = jsonRootObject.getString("respCode");
+
+            if(code.equals("00"))
+            {
             }
 
         } catch (JSONException e) {
@@ -794,7 +834,6 @@ public class Json_Parsing {
             if(db.isOpen())
                 db.close();
         }
-
         System.out.println("@@Done!!!! fps download");
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -808,5 +847,7 @@ public class Json_Parsing {
             }
         });
     }
+
+
 
 }

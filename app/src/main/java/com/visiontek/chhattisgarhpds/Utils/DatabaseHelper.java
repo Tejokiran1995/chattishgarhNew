@@ -2095,10 +2095,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public  List<CommWiseData> getPendingOfflineData()
+    public  List<CommWiseData> getPendingOfflineData(int limit)
     {
         List<CommWiseData> fpsOfflineTransResponses = new ArrayList<>();
-        String query = "select RcId,CommCode,TotQty,BalQty,SchemeId,IssuedQty,RecptId,commAmount,TotAmt,Rate,MemberName,DateTime,TxnType,AllotMonth,AllotYear,allocationType from BenfiaryTxn where TxnUploadSts = 'N' limit 20";
+        String limitClause;
+        if(limit == 20)
+        {
+            limitClause = " LIMIT 20";
+        }
+        else
+            limitClause = "";
+        String query = "select RcId,CommCode,TotQty,BalQty,SchemeId,IssuedQty,RecptId,commAmount,TotAmt,Rate,MemberName,DateTime,TxnType,AllotMonth,AllotYear,allocationType from BenfiaryTxn where TxnUploadSts = 'N' "+limitClause;
         SQLiteDatabase db = this.getReadableDatabase();
         try
         {

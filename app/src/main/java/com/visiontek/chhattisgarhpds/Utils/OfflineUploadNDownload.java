@@ -5,8 +5,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.visiontek.chhattisgarhpds.Activities.Device_Update;
 import com.visiontek.chhattisgarhpds.Models.PartialOnlineData;
+import com.visiontek.chhattisgarhpds.Models.ResponseData;
 import com.visiontek.chhattisgarhpds.Models.UploadingModels.CommWiseData;
+import com.visiontek.chhattisgarhpds.Models.UploadingModels.DataDownloadAckRequest;
 import com.visiontek.chhattisgarhpds.Models.UploadingModels.UploadDataModel;
 
 import org.json.JSONArray;
@@ -63,7 +66,7 @@ public class OfflineUploadNDownload {
                 return -2;
             }
             UploadDataModel uploadDataModel = new UploadDataModel();
-            List<CommWiseData> commWiseData = databaseHelper.getPendingOfflineData();
+            List<CommWiseData> commWiseData = databaseHelper.getPendingOfflineData(20);
             PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
             int totalRecords = databaseHelper.getTotCommodityTxns();
             int uploadingRecords = commWiseData.size();
@@ -213,7 +216,7 @@ public class OfflineUploadNDownload {
         Gson gson = new Gson();
 
         UploadDataModel uploadDataModel = new UploadDataModel();
-        List<CommWiseData> commWiseData = databaseHelper.getPendingOfflineData();
+        List<CommWiseData> commWiseData = databaseHelper.getPendingOfflineData(1000);
         PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
         int totalRecords = databaseHelper.getTotCommodityTxns();
         int uploadingRecords = commWiseData.size();
@@ -274,7 +277,7 @@ public class OfflineUploadNDownload {
                 sqLiteDatabase.execSQL("update BenfiaryTxn set TxnUploadSts = 'Y'");
                 String deleteStatus = jsonRootObject.getString("deleteStatus");
                 //JSONArray jsonArray1 = jsonRootObject.optJSONArray("fpsCb");
-                if(deleteStatus.equals("Y") && partialOnlineData.getOfflineLogin().equals("Y"))
+                if(deleteStatus.equals("Y") && partialOnlineData.getOfflineLogin().equals("N"))
                 {
                     sqLiteDatabase.execSQL("DELETE FROM KeyRegister");
                     sqLiteDatabase.execSQL("DELETE FROM Pos_Ob");
@@ -296,5 +299,69 @@ public class OfflineUploadNDownload {
                 sqLiteDatabase.close();
             return ret;
         }
+    }
+
+    public ResponseData postDataDownloadAck(String fpsId, String fpsSessionId, String partialDataDownloadFlag, String KeyregisterDataDeleteStatus)
+    {
+        RequestBody body = null;
+        ResponseData responseDataModel = new ResponseData();
+        responseDataModel.setRespCode(-1);
+        responseDataModel.setRespMessage("Invalid Response from Server\\nPlease try again");
+
+        System.out.println("BOdy.." + body);
+        String url="http://epos.nic.in/ePosCommonServiceCTG/eposCommon/dataDownloadACK";
+
+        DataDownloadAckRequest dataDownloadAckRequest = new DataDownloadAckRequest();
+        Gson gson = new Gson();
+        PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
+
+        dataDownloadAckRequest.setDataDownloadStatus("Y");
+        dataDownloadAckRequest.setDistributionMonth(partialOnlineData.getAllotMonth());
+        dataDownloadAckRequest.setDistributionYear(partialOnlineData.getAllotYear());
+        dataDownloadAckRequest.setFpsId(fpsId);
+        dataDownloadAckRequest.setKeyregisterDataDeleteStatus(KeyregisterDataDeleteStatus);
+        dataDownloadAckRequest.setPendingRecords(0);
+        dataDownloadAckRequest.setSessionId(fpsSessionId);
+        dataDownloadAckRequest.setStateCode("22");
+        dataDownloadAckRequest.setTerminalId(DEVICEID);
+        dataDownloadAckRequest.setToken(OFFLINE_TOKEN);
+        dataDownloadAckRequest.setTotalRecords(0);
+        dataDownloadAckRequest.setUploadingRecords(0);
+
+        if(KeyregisterDataDeleteStatus.equals("Y"))
+        {
+            List<CommWiseData> commWiseData = databaseHelper.getPendingOfflineData(1000);
+            dataDownloadAckRequest.setFpsOfflineTransResponses(commWiseData);
+        }
+
+        String finalPayload = gson.toJson(dataDownloadAckRequest);
+
+        body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),finalPayload );
+        final Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        Response response = null;
+        try {
+            response = okHttpClient.newCall(request).execute();
+            Log.e("[postDataDownloadAck]","HTTP response code ==> "+response.code());
+            if(response.isSuccessful()){
+
+                String responseData = response.body().string();
+                JSONObject jsonRootObject = new JSONObject(responseData);
+                String respcode = jsonRootObject.getString("respCode");
+                Log.e("[postDataDownloadAck]","response respCode ==> "+respcode);
+                responseDataModel.setRespCode(Integer.parseInt(respcode));
+                responseDataModel.setRespMessage(jsonRootObject.getString("respMessage"));
+            }else {
+                Log.e("[postDataDownloadAck]","Failed ==> "+response.message());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return responseDataModel;
     }
 }

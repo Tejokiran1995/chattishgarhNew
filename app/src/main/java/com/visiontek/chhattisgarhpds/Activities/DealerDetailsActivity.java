@@ -38,6 +38,7 @@ import com.visiontek.chhattisgarhpds.Models.DATAModels.DataModel;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetURLDetails.fpsCommonInfoModel.fpsCommonInfo;
 import com.visiontek.chhattisgarhpds.Models.DealerDetailsModel.GetUserDetails.DealerModel;
 import com.visiontek.chhattisgarhpds.Models.PartialOnlineData;
+import com.visiontek.chhattisgarhpds.Models.ResponseData;
 import com.visiontek.chhattisgarhpds.Models.UploadingModels.CommWiseData;
 import com.visiontek.chhattisgarhpds.Models.UploadingModels.UploadDataModel;
 import com.visiontek.chhattisgarhpds.R;
@@ -1032,23 +1033,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
-                                "<SOAP-ENV:Envelope\n" +
-                                "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
-                                "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +
-                                "    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-                                "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                                "    xmlns:ns1=\"http://service.fetch.rationcard/\">\n" +
-                                "    <SOAP-ENV:Body>\n" +
-                                "        <ns1:menuDisplayService>\n" +
-                                "            <shop_number>" + dealerConstants.stateBean.statefpsId + "</shop_number>\n" +
-                                "            <fpsSessionId>" + dealerConstants.fpsCommonInfo.fpsSessionId + "</fpsSessionId>\n" +
-                                "            <stateCode>" + dealerConstants.stateBean.stateCode + "</stateCode>\n" +
-                                "        </ns1:menuDisplayService>\n" +
-                                "    </SOAP-ENV:Body>\n" +
-                                "</SOAP-ENV:Envelope>";
-                        Util.generateNoteOnSD(context, "MenuReq.txt", menu);
-                        hitURLMENU(menu);
+                        updateDownloadStatus();
                     }
                 }
             }
@@ -1069,23 +1054,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 if (!code.equals("00")) {
                     show_error_box(msg, code );
                 } else {
-                    String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
-                                "<SOAP-ENV:Envelope\n" +
-                                "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
-                                "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +
-                                "    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-                                "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                                "    xmlns:ns1=\"http://service.fetch.rationcard/\">\n" +
-                                "    <SOAP-ENV:Body>\n" +
-                                "        <ns1:menuDisplayService>\n" +
-                                "            <shop_number>" + dealerConstants.stateBean.statefpsId + "</shop_number>\n" +
-                                "            <fpsSessionId>" + dealerConstants.fpsCommonInfo.fpsSessionId + "</fpsSessionId>\n" +
-                                "            <stateCode>" + dealerConstants.stateBean.stateCode + "</stateCode>\n" +
-                                "        </ns1:menuDisplayService>\n" +
-                                "    </SOAP-ENV:Body>\n" +
-                                "</SOAP-ENV:Envelope>";
-                        Util.generateNoteOnSD(context, "MenuReq.txt", menu);
-                        hitURLMENU(menu);
+                    updateDownloadStatus();
                 }
             }
 
@@ -1133,6 +1102,65 @@ public class DealerDetailsActivity extends AppCompatActivity {
         }
         else
             show_error_box(context.getResources().getString(R.string.Internet_Connection_Msg), context.getResources().getString(R.string.Internet_Connection), 0);
+    }
+
+    public void updateDownloadStatus()
+    {
+        pd = ProgressDialog.show(context, context.getResources().getString(R.string.updateDownloadSts), context.getResources().getString(R.string.Consent_Form), true, false);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String message = "Invalid Response from Server\\nPlease try again";
+                OfflineUploadNDownload offlineUploadNDownload = new OfflineUploadNDownload(context);
+                ResponseData responseData = offlineUploadNDownload.postDataDownloadAck(dealerConstants.stateBean.statefpsId, dealerConstants.fpsCommonInfo.fpsSessionId, dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus, dealerConstants.fpsCommonInfo.keyregisterDataDeleteStatus);
+                DealerDetailsActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(pd.isShowing())
+                            pd.dismiss();
+                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                        alertDialogBuilder.setMessage(responseData.getRespMessage());
+                        alertDialogBuilder.setTitle("Download ACK Response");
+                        alertDialogBuilder.setCancelable(false);
+                        alertDialogBuilder.setPositiveButton(context.getResources().getString(R.string.Ok),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        if (responseData.getRespCode() == 0) {
+                                            getMenuData();
+                                        }
+                                    }
+                                });
+
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                    }
+                });
+            }
+    }).start();
+
+    }
+
+
+    public void getMenuData()
+    {
+        String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
+                "<SOAP-ENV:Envelope\n" +
+                "    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
+                "    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" +
+                "    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                "    xmlns:ns1=\"http://service.fetch.rationcard/\">\n" +
+                "    <SOAP-ENV:Body>\n" +
+                "        <ns1:menuDisplayService>\n" +
+                "            <shop_number>" + dealerConstants.stateBean.statefpsId + "</shop_number>\n" +
+                "            <fpsSessionId>" + dealerConstants.fpsCommonInfo.fpsSessionId + "</fpsSessionId>\n" +
+                "            <stateCode>" + dealerConstants.stateBean.stateCode + "</stateCode>\n" +
+                "        </ns1:menuDisplayService>\n" +
+                "    </SOAP-ENV:Body>\n" +
+                "</SOAP-ENV:Envelope>";
+        Util.generateNoteOnSD(context, "MenuReq.txt", menu);
+        hitURLMENU(menu);
     }
 
 }

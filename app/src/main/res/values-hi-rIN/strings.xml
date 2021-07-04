@@ -286,6 +286,7 @@
     <string name="PindCode">पिन कोड</string>
     <string name="Gender">लिंग</string>
     <string name="Beneficiary_Details">लाभार्थी विवरण</string>
+    <string name="updateDownloadSts">डाउनलोड स्थिति अपडेट कर रहा है \n कृपया प्रतीक्षा करें ..</string>
     <string name="LAST_RECEIPT">अंतिम रसीद</string>
     <string name="Please_Enter_date_in_Edit_text_to_view_Stock">स्टॉक देखने के लिए कृपया टेक्स्ट संपादित करें में तारीख दर्ज करें</string>
     <string name="Enter_Date">दिनांक दर्ज करें</string>

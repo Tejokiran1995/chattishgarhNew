@@ -53,7 +53,10 @@ import org.w3c.dom.Document;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -444,7 +447,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                             Util.generateNoteOnSD(context, "DealerFusionReq.txt", fusion);
                             hitURLfusion(fusion);
                         }
-                       if(dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus.equals("Y"))
+                        if(dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus.equals("Y"))
                             new UploadPendingRecords(dealerConstants.fpsCommonInfo.fpsSessionId,dealerConstants.stateBean.statefpsId,"",dealerConstants.fpsCommonInfo.partialOnlineOfflineStatus).execute();
                         else{
                              String menu = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +
@@ -534,10 +537,12 @@ public class DealerDetailsActivity extends AppCompatActivity {
         {
             e.printStackTrace();
         }
-
+        //"Date : 15-08-1947 00:00:00 \n"
         PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
-
-
+        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = df.format(c.getTime());
         AlertDialog.Builder alert = new AlertDialog.Builder(DealerDetailsActivity.this,
                 AlertDialog.THEME_HOLO_LIGHT);
         alert.setTitle("");
@@ -548,7 +553,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
                 "Uploaded Records : "+uploadedCount+"\n" +
                 "Pending Records : "+pendingCount+"\n" +
                 "Alloted Month&Year :"+partialOnlineData.getAllotMonth()+"-"+partialOnlineData.getAllotYear()+"\n" +
-                "Date : 23-06-2021 T:10:58:02 \n" +
+                "Date : "+formattedDate+"\n"+
                 "Fps Id : "+dealerConstants.fpsCommonInfo.fpsId);
         alert.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
@@ -897,6 +902,7 @@ public class DealerDetailsActivity extends AppCompatActivity {
 
         }
 
+
         @Override
         protected void onPostExecute(Integer ret) {
             super.onPostExecute(ret);
@@ -1128,7 +1134,14 @@ public class DealerDetailsActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface arg0, int arg1) {
                                         if (responseData.getRespCode() == 0) {
                                             getMenuData();
+                                        }else{
+
+                                            if(responseData.getRespCode()==1){
+
+                                                getMenuData();
+                                            }
                                         }
+
                                     }
                                 });
 

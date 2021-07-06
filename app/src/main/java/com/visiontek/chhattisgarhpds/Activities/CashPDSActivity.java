@@ -73,7 +73,7 @@ public class CashPDSActivity extends AppCompatActivity implements PrinterCallBac
     RadioGroup radioGroup;
     Context context;
     EditText id;
-    Button home,last,get_details;
+    Button home,last,get_details,get_cardstaus;
     RadioButton radiorc, radioaadhaar;
     ProgressDialog pd = null;
     TextView rd;

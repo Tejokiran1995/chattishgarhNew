@@ -149,7 +149,7 @@ public class DailySalesReportActivity extends AppCompatActivity implements Print
                 if (!date.equals("dd/MM/yyyy") && date.length()>0)
                 {
                     PartialOnlineData partialOnlineData = databaseHelper.getPartialOnlineData();
-                    if(!partialOnlineData.getOfflineLogin().equals("Y") && networkConnected(context))
+                    if(partialOnlineData.getOfflineLogin().equals("N") && networkConnected(context))
                     {
                         saleStateFpsId = dealerConstants.stateBean.statefpsId;
                         String sale = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?>\n" +

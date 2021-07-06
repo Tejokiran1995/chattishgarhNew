@@ -42,7 +42,7 @@ public class OfflineUploadNDownload {
         okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
                 .build();
         databaseHelper = new DatabaseHelper(context);
     }
@@ -72,7 +72,7 @@ public class OfflineUploadNDownload {
             int uploadingRecords = commWiseData.size();
             if (uploadingRecords == 0)
                 break;
-            if(uploadingRecords >= previousPendingCount)
+           /* if(uploadingRecords >= previousPendingCount)
             {
                 failedTrails++;
             }
@@ -82,8 +82,8 @@ public class OfflineUploadNDownload {
             {
                 Log.e("[ManlSrUpldPartialTxns]","upload failed 2 times with same request");
                 return -1;
-            }
-            previousPendingCount = uploadingRecords;
+            }*/
+            //previousPendingCount = uploadingRecords;
             uploadDataModel.setFpsId(fpsId);
             uploadDataModel.setSessionId(fpsSessionId);//
             uploadDataModel.setStateCode("22");
@@ -148,7 +148,13 @@ public class OfflineUploadNDownload {
             if(respcode.equals("00"))
             {
                 JSONArray jsonArray1 = jsonRootObject.optJSONArray("updatedReceipts");
-                for(int i=0; i < jsonArray1.length(); i++) {
+                int size = jsonArray1.length();
+                System.out.println("[updateBenfiaryTxnRecords]  updatedReceipts.size :: " +size);
+                if(size == 0)
+                {
+                    ret = -1;
+                }
+                for(int i=0; i < size; i++) {
                     JSONObject jsonObject = jsonArray1.getJSONObject(i);
                     String receiptId = jsonObject.optString("receiptId").toString();
                     String rcId = jsonObject.optString("rcId").toString();
@@ -159,6 +165,8 @@ public class OfflineUploadNDownload {
                     sqLiteDatabase.execSQL(query);
                 }
             }
+            else
+                ret = -1;
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -183,7 +191,13 @@ public class OfflineUploadNDownload {
             if(respcode.equals("00"))
             {
                 JSONArray jsonArray1 = jsonRootObject.optJSONArray("fpsCb");
-                for(int i=0; i < jsonArray1.length(); i++) {
+                int size = jsonArray1.length();
+                System.out.println("[insertPosObRecords]  fpsCb.size :: " +size);
+                if(size == 0)
+                {
+                    ret = 0;
+                }
+                for(int i=0; i < size; i++) {
                     JSONObject jsonObject = jsonArray1.getJSONObject(i);
                     String commCode = jsonObject.optString("commCode").toString();
                     String commNameEn = jsonObject.optString("commNameEn").toString();
@@ -195,6 +209,8 @@ public class OfflineUploadNDownload {
                     sqLiteDatabase.execSQL(query);
                 }
             }
+            else
+                ret = -1;
 
         } catch (JSONException e) {
             e.printStackTrace();

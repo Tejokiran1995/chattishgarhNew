@@ -1750,7 +1750,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<commDetails> commodityDetails= new ArrayList<>();
         db = this.getReadableDatabase();
         try {
-            String query = "SELECT KR.allocationType, KR.allotedMonth, KR.allotedYear, KR.totalEntitlement - KR.balanceEntitlement, KR.balanceEntitlement, PO.closingBalance, KR.commNameEn, KR.commNameLl, KR.commcode, KR.Unit, 1, commPrice, 0.0 requiredQty, KR.totalEntitlement totQty, 'N' weighing, 0 FROM KeyRegister KR, Pos_ob PO WHERE rcId = '"+rcNumber+"' AND KR.commCode = PO.commCode GROUP BY KR.allocationType, KR.AllotMonth, KR.AllotYear, KR.rcId, KR.commCode;";
+            String query = "SELECT KR.allocationType, KR.allotedMonth, KR.allotedYear, KR.totalEntitlement - KR.balanceEntitlement, KR.balanceEntitlement, PO.closingBalance, KR.commNameEn, KR.commNameLl, KR.commcode, KR.Unit, 0.1, commPrice, 0.0 requiredQty, KR.totalEntitlement totQty, 'N' weighing, 0 FROM KeyRegister KR, Pos_ob PO WHERE rcId = '"+rcNumber+"' AND KR.commCode = PO.commCode GROUP BY KR.allocationType, KR.AllotMonth, KR.AllotYear, KR.rcId, KR.commCode;";
             Cursor res = db.rawQuery( query,null,null);
             res.moveToFirst();
             System.out.println("query :: "+query+", COUNT :: " + res.getCount());

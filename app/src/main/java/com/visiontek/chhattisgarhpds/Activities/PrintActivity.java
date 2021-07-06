@@ -149,6 +149,7 @@ public class PrintActivity extends AppCompatActivity implements PrinterCallBack 
                     if(offlineEligibleFlag == 0)
                     {
                         String message = databaseHelper.txnAllotedBetweenTime();
+                        //message = "";
                         if(message.isEmpty())
                         {
                             if(txnType.equals("O"))

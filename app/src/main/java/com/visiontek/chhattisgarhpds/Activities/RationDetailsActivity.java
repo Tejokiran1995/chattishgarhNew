@@ -470,7 +470,7 @@ public class RationDetailsActivity extends AppCompatActivity {
             }
         } else {
             verifiedWeight = Float.parseFloat((com));
-            modules = verifiedWeight % minQty;
+            modules = (verifiedWeight*1000) % (minQty*1000);
             if (modules == (float) 0) {
                 return verifiedWeight;
             }
@@ -493,7 +493,8 @@ public class RationDetailsActivity extends AppCompatActivity {
         String deviceTxnId = String.format("%s%03d%s", AppConstants.DEVICEID,dayOfYear,dateFormat.format(now));
         String billingDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now);
 
-        if (userCommModelssize > 0) {
+        if (userCommModelssize > 0)
+        {
             for (int i = 0; i < userCommModelssize; i++) {
                 commqty = Float.parseFloat((memberConstants.commDetails.get(i).requiredQty));
                 if (commqty>0.0)
@@ -519,10 +520,12 @@ public class RationDetailsActivity extends AppCompatActivity {
                         double price = Double.parseDouble(memberConstants.commDetails.get(i).price);
                         double balancedQty = Double.parseDouble(memberConstants.commDetails.get(i).balQty);
 
+                        double totalAmount = requiredQty * price;
+
                         ContentValues contentValues = new ContentValues();
                         contentValues.put("bal_qty",balancedQty - requiredQty);
                         contentValues.put("carry_over",requiredQty);
-                        contentValues.put("commIndividualAmount",requiredQty * price);
+                        contentValues.put("commIndividualAmount",totalAmount);
                         contentValues.put("commCode", memberConstants.commDetails.get(i).commcode);
                         contentValues.put("comm_name",memberConstants.commDetails.get(i).getCommName());
                         contentValues.put("comm_name_ll",memberConstants.commDetails.get(i).getCommNamell());
@@ -532,7 +535,7 @@ public class RationDetailsActivity extends AppCompatActivity {
                         contentValues.put("retail_price",price);
                         contentValues.put("scheme_desc_en","");
                         contentValues.put("scheme_desc_ll","");
-                        contentValues.put("tot_amount",price);
+                        contentValues.put("tot_amount",totalAmount);
                         contentValues.put("total_quantity",memberConstants.commDetails.get(i).totQty);
                         contentValues.put("transaction_time",billingDate);
                         contentValues.put("uid_refer_no","");//This is we need to think about later

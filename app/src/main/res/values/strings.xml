@@ -84,6 +84,7 @@
     <string name="Get_Details">Get Details</string>
     <string name="Home">Home</string>
     <string name="Last_Reciept">Last Reciept</string>
+    <string name="Get_Card_Status" translatable="false">Get CardStatus</string>
 
     //home
     <string name="HOME">HOME</string>

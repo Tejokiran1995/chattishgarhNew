@@ -143,7 +143,6 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/TextsizeB"
                     android:textStyle="bold" />
-
                 <Button
                     android:id="@+id/cash_pds_lastreciept"
                     android:layout_width="match_parent"
@@ -152,6 +151,17 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="@string/Last_Reciept"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/TextsizeB"
+                    android:textStyle="bold" />
+                <Button
+                    android:id="@+id/cash_pds_get_card_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimary"
+                    android:text="@string/Get_Card_Status"
                     android:textColor="@color/white"
                     android:textSize="@dimen/TextsizeB"
                     android:textStyle="bold" />
